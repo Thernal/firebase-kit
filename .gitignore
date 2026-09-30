@@ -25,3 +25,9 @@ DerivedData/
 
 # Agent scratch (see .agents/workspace.md)
 .misc/
+
+# Firebase configuration names a project: only the examples in config/firebase are committed
+google-services.json
+GoogleService-Info.plist
+fastlane/.env*
+!fastlane/.env*.example

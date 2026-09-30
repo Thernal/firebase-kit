@@ -53,7 +53,7 @@ It copies the `code` parts of [`kit.yml`](kit.yml) renamed, places its `files` w
 
 The same by hand, from a clone of this repository.
 
-1. **Copy** the paths listed under `code` in [`kit.yml`](kit.yml) into the app, under the module path the app gives them: `firebase/…` → `core/firebase/…`; copy the paths under `files` where the app keeps such files (`ios/Firebase`, `scripts/distribute-firebase.sh`, `fastlane/FirebaseFastfile`). Note the commit you copied (`git rev-parse HEAD`) — updates start from it.
+1. **Copy** the paths listed under `code` in [`kit.yml`](kit.yml) into the app, under the module path the app gives them: `firebase/…` → `core/firebase/…`; copy the paths under `files` where the app keeps such files (`ios/Firebase`, `scripts/distribute-firebase.sh`, `fastlane/FirebaseFastfile`, `fastlane/.env.firebase.example`, `config/firebase`). Note the commit you copied (`git rev-parse HEAD`) — updates start from it.
 2. **Rename** in everything copied:
 
    | In the kit | Becomes | Where |
@@ -65,7 +65,7 @@ The same by hand, from a clone of this repository.
 
    ```sh
    # in the app, after copying — perl, so it runs the same on macOS and Linux
-   grep -rlI -e io.thernal.firebasekit -e io/thernal/firebasekit -e :firebase -e plugins.firebasekit. -e SampleShared core/firebase iosApp/iosApp/Firebase scripts/distribute-firebase.sh fastlane/FirebaseFastfile \
+   grep -rlI -e io.thernal.firebasekit -e io/thernal/firebasekit -e :firebase -e plugins.firebasekit. -e SampleShared core/firebase iosApp/iosApp/Firebase scripts/distribute-firebase.sh fastlane/FirebaseFastfile fastlane/.env.firebase.example config/firebase \
      | xargs perl -pi -e 's/\Qio.thernal.firebasekit\E/com.example.app/g; s{\Qio/thernal/firebasekit\E}{com/example/app}g; s/\Q:firebase:\E/:core:firebase:/g; s/"\Q:firebase\E"/":core:firebase"/g; s/projects\.\Qfirebase\E\./projects.core.firebase./g; s/libs\.plugins\.\Qfirebasekit\E\./libs.plugins.app./g; s/^(\s*(?:@\w+\s+)?)import \QSampleShared\E$/$1import ComposeApp/'
    find core/firebase -depth -type d -path '*/io/thernal/firebasekit' | while read -r d; do
      mkdir -p "${d%/io/thernal/firebasekit}/com/example" && mv "$d" "${d%/io/thernal/firebasekit}/com/example/app"
@@ -88,7 +88,8 @@ The same by hand, from a clone of this repository.
 | `firebase/bridge` | the interfaces the Swift implements, `FirebaseBridges`, `PushHub` — exported into the iOS framework | messaging/api |
 | `firebase/testing` | `FakeCrashReporter`, `testRemoteConfig()`, `FakePushMessaging`, `FakePushMessageStream`, `FakeSocialSignIn` | the apis |
 | `ios/Firebase` | `FirebaseKit.swift` and one bridge per capability | Firebase iOS SDK, GoogleSignIn (SPM) |
-| `fastlane/FirebaseFastfile`, `scripts/distribute-firebase.sh` | App Distribution lanes | fastlane, build-kit's `make` |
+| `fastlane/FirebaseFastfile`, `scripts/distribute-firebase.sh`, `fastlane/.env.firebase.example` | App Distribution lanes and their environment | fastlane, build-kit's `make` |
+| `config/firebase` | example `google-services.json` and `GoogleService-Info.plist`, and what the kit reads from them | — |
 | `sample/{shared,android,ios}` | one screen using all four | the kit — never copied |
 
 ## Building
@@ -111,5 +112,7 @@ xcodebuild -project sample/ios/Sample.xcodeproj -scheme Sample -sdk iphonesimula
   -destination 'generic/platform=iOS Simulator' build
 ```
 
-No `google-services.json` or `GoogleService-Info.plist` is committed; without them the sample runs with
-Firebase unconfigured and every capability says so. Add your own to try it against a project.
+No `google-services.json` or `GoogleService-Info.plist` is committed — `config/firebase` has examples of
+both. Without them the sample runs with Firebase unconfigured and every capability says so; put real ones
+at `sample/android/google-services.json` and `sample/ios/Sample/GoogleService-Info.plist` and it runs
+against that project.

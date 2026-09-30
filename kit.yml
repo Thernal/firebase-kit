@@ -35,6 +35,8 @@ files:
   - ios/Firebase
   - scripts/distribute-firebase.sh
   - fastlane/FirebaseFastfile
+  - fastlane/.env.firebase.example
+  - config/firebase
 
 # The public contract — its source, not its README.
 surface:
@@ -65,7 +67,7 @@ requires:
   - catalog kotlinx-coroutines-core, kotlinx-coroutines-play-services, kotlinx-coroutines-test (kotlinx-coroutines = 1.11.0), kotlin-test
   - catalog androidx-core, lifecycle-process, androidx-credentials, androidx-credentials-play-services-auth, google-identity-googleid, androidx-startup
   - catalog metro-runtime, plugin metro (metro = 1.4.2)
-  - android plugins com.google.gms.google-services and com.google.firebase.crashlytics on each app, a google-services.json per flavor
+  - android plugins com.google.gms.google-services and com.google.firebase.crashlytics on each app, a google-services.json per flavor (config/firebase has an example)
   - android the host activity calls PushIntents.handle(intent) in onCreate and onNewIntent; notification channel and icon as Firebase default_notification_* meta-data
   - ios the framework exports firebase/bridge (export + api in iosMain; build-kit app.api.allowed)
   - ios Xcode adds firebase-ios-sdk and GoogleSignIn-iOS 9.x via SPM, the placed ios/Firebase folder to the app target, GoogleService-Info.plist per flavor, push and Sign in with Apple capabilities

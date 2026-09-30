@@ -105,6 +105,7 @@
 			buildPhases = (
 				101579F21DD9690FD4887BAB /* Compile Kotlin framework */,
 				2B04FC467D41EE3D0A7B5BDE /* Sources */,
+				AC5A0B58E6EB4BDCC631E27F /* Copy GoogleService-Info.plist if present */,
 				4317E9B0142CFF1FB633CEC6 /* Frameworks */,
 			);
 			buildRules = (
@@ -180,6 +181,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "cd \"$SRCROOT/../..\"\n./gradlew :sample:shared:embedAndSignAppleFrameworkForXcode\n";
+		};
+		AC5A0B58E6EB4BDCC631E27F /* Copy GoogleService-Info.plist if present */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy GoogleService-Info.plist if present";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Committed without one (config/firebase explains it): Firebase then stays unconfigured.\nsource=\"$SRCROOT/Sample/GoogleService-Info.plist\"\nif [ -f \"$source\" ]; then\n  cp \"$source\" \"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/GoogleService-Info.plist\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

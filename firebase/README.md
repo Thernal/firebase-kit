@@ -7,7 +7,8 @@ Setup, then each capability task by task. Why it has this shape: [`DESIGN.md`](D
 ### Gradle (Android)
 
 In each Android application module (build-kit's `apps/<name>`), the two Firebase Gradle plugins and the
-app's own `google-services.json` per flavor (`src/<flavor>/google-services.json`):
+app's own `google-services.json` per flavor (`src/<flavor>/google-services.json`) — the kit installs
+`config/firebase/` with an example of each file and what the kit reads from it:
 
 ```kotlin
 plugins {
@@ -52,7 +53,8 @@ With build-kit, `api(...)` is refused unless listed: add the module to `app.api.
    `https://github.com/google/GoogleSignIn-iOS` (for Google sign-in).
 2. The kit install placed `FirebaseKit.swift` and the bridges in the folder `--place` named; add that folder
    to the app target. Delete a bridge the app does not use and pass `false` for it in `configure`.
-3. Add `GoogleService-Info.plist` per flavor (copied into the bundle by a build phase per configuration).
+3. Add `GoogleService-Info.plist` per flavor (copied into the bundle by a build phase per configuration);
+   `config/firebase/GoogleService-Info.example.plist` shows its shape.
 4. Capabilities: Push Notifications, Background Modes → Remote notifications, Sign in with Apple.
 5. For Google sign-in, the plist's `REVERSED_CLIENT_ID` as a URL scheme (Info → URL Types).
 6. Crashlytics: the `upload-symbols` run script from the Crashlytics package, for dSYMs.
@@ -226,5 +228,6 @@ scripts/distribute-firebase.sh ios beta
 
 The app's Fastfile adds `import "FirebaseFastfile"`, its Pluginfile
 `gem "fastlane-plugin-firebase_app_distribution"`. The environment carries
-`GOOGLE_APPLICATION_CREDENTIALS` and the app ids — `FirebaseFastfile`'s header lists them. The production
+`GOOGLE_APPLICATION_CREDENTIALS` and the app ids — `fastlane/.env.firebase.example` lists them; copy it
+to `fastlane/.env.firebase` (keep it out of git) and pass `--env firebase`, or set them in CI. The production
 flavor is refused: it goes to the stores.
