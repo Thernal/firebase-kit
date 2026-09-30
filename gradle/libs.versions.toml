@@ -1,0 +1,110 @@
+[versions]
+# Language / toolchain
+kotlin = "2.4.10"
+jvm = "17"
+
+# Build tooling
+agp = "9.2.1"
+
+# Android SDK
+android-compile-sdk = "37"
+android-min-sdk = "24"
+android-target-sdk = "37"
+
+# Compose Multiplatform
+compose-multiplatform = "1.12.0"
+
+# The sample's UI only; the kit's modules do not use Material.
+compose-material3 = "1.9.0"
+
+# Firebase, Android only — the BOM aligns every Firebase artifact. iOS takes the Firebase iOS SDK
+# through Swift Package Manager in the app's Xcode project and reaches it through the Swift bridges.
+firebase-bom = "34.14.1"
+google-services = "4.4.4"
+firebase-crashlytics-plugin = "3.0.7"
+
+# AndroidX, Android only: Credential Manager and Google ID for sign-in, the notification builder,
+# startup (the foreground-activity tracker), the process lifecycle (is the app in the foreground).
+androidx-activity = "1.13.0"
+androidx-core = "1.19.0"
+androidx-credentials = "1.6.0"
+google-identity-googleid = "1.2.0"
+androidx-startup = "1.2.0"
+androidx-lifecycle = "2.11.0"
+
+# KotlinX
+kotlinx-coroutines = "1.11.0"
+
+# Dependency injection — Metro, for the wiring module and the sample's graph.
+metro = "1.4.2"
+
+# Static analysis
+detekt = "2.0.0-alpha.2"
+
+# Testing (JVM-only, for the custom Detekt rules in build-logic)
+junit4 = "4.13.2"
+
+[libraries]
+# Gradle plugins resolved on the build-logic classpath
+android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+compose-compiler-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+
+# Kotlin
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+
+# Compose Multiplatform
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-material3" }
+
+# Firebase (Android)
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-config = { module = "com.google.firebase:firebase-config" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
+kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinx-coroutines" }
+
+# Lifecycle
+lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx-lifecycle" }
+
+# AndroidX
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+androidx-core = { module = "androidx.core:core", version.ref = "androidx-core" }
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "androidx-credentials" }
+androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "androidx-credentials" }
+google-identity-googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "google-identity-googleid" }
+androidx-startup = { module = "androidx.startup:startup-runtime", version.ref = "androidx-startup" }
+
+# KotlinX
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+
+# Dependency injection
+metro-runtime = { module = "dev.zacsweers.metro:runtime", version.ref = "metro" }
+
+# Static analysis
+detekt-gradle-plugin = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+detekt-api = { module = "dev.detekt:detekt-api", version.ref = "detekt" }
+detekt-test = { module = "dev.detekt:detekt-test", version.ref = "detekt" }
+detekt-ktlint-wrapper = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt" }
+junit4 = { module = "junit:junit", version.ref = "junit4" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
+
+# Conventions (build-logic)
+firebasekit-kmp-library = { id = "io.thernal.firebasekit.kmp.library" }
+firebasekit-compose = { id = "io.thernal.firebasekit.compose" }
+firebasekit-injection = { id = "io.thernal.firebasekit.injection" }
+firebasekit-android-application = { id = "io.thernal.firebasekit.android.application" }
