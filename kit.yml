@@ -1,0 +1,73 @@
+# What an application takes from firebase-kit, and how. Read by `skillctl.sh kit …`
+# (the skill-manager skill in github.com/Thernal/knowledge), which parses it with
+# sed and awk — so keep to this shape: `key: value` scalars, `key:` followed by
+# `  - item` lines, `#` comments. No nesting, no quoting, no inline lists.
+
+name: firebase-kit
+
+# Rename points, applied to every file taken from here, code and skill alike.
+package: io.thernal.firebasekit
+module: :firebase
+alias: firebasekit
+# The Kotlin framework the Swift bridges `import` — the app's (--framework).
+framework: SampleShared
+
+# Copied into the application and merged on update. The sample is not.
+code:
+  - firebase/bridge
+  - firebase/crash/api
+  - firebase/crash/impl
+  - firebase/crash/wiring
+  - firebase/config/api
+  - firebase/config/impl
+  - firebase/config/wiring
+  - firebase/messaging/api
+  - firebase/messaging/impl
+  - firebase/messaging/wiring
+  - firebase/auth/api
+  - firebase/auth/impl
+  - firebase/auth/wiring
+  - firebase/testing
+
+# Outside Gradle modules, copied and merged like code; --place puts each where the app keeps it.
+files:
+  - ios/Firebase
+  - scripts/distribute-firebase.sh
+  - fastlane/FirebaseFastfile
+
+# The public contract — its source, not its README.
+surface:
+  - firebase/crash/api/src
+  - firebase/config/api/src
+  - firebase/messaging/api/src
+  - firebase/auth/api/src
+  - firebase/bridge/src
+  - firebase/testing/src/commonMain
+
+# Installed into the application's skills directory, renamed like the code.
+skill:
+  - skills/firebase-kit
+
+# Never copied. A change here is announced on update and read in place.
+docs:
+  - README.md
+  - firebase/README.md
+  - firebase/DESIGN.md
+  - docs
+
+# What the copied modules expect the application to provide.
+requires:
+  - plugin <alias>.kmp.library — Kotlin Multiplatform library (build-logic/convention: KmpLibraryConventionPlugin)
+  - plugin <alias>.injection — Metro, for the wiring modules (build-logic/convention: InjectionConventionPlugin)
+  - targets android, iosArm64, iosSimulatorArm64 — the same set as the other kits
+  - catalog firebase-bom (34.14.1), firebase-crashlytics, firebase-config, firebase-messaging, firebase-auth — only the capabilities used
+  - catalog kotlinx-coroutines-core, kotlinx-coroutines-play-services, kotlinx-coroutines-test (kotlinx-coroutines = 1.11.0), kotlin-test
+  - catalog androidx-core, lifecycle-process, androidx-credentials, androidx-credentials-play-services-auth, google-identity-googleid, androidx-startup
+  - catalog metro-runtime, plugin metro (metro = 1.4.2)
+  - android plugins com.google.gms.google-services and com.google.firebase.crashlytics on each app, a google-services.json per flavor
+  - android the host activity calls PushIntents.handle(intent) in onCreate and onNewIntent; notification channel and icon as Firebase default_notification_* meta-data
+  - ios the framework exports firebase/bridge (export + api in iosMain; build-kit app.api.allowed)
+  - ios Xcode adds firebase-ios-sdk and GoogleSignIn-iOS 9.x via SPM, the placed ios/Firebase folder to the app target, GoogleService-Info.plist per flavor, push and Sign in with Apple capabilities
+  - ios the app delegate calls FirebaseKit.configure, didRegisterForRemoteNotifications, didReceiveRemoteNotification, open(url:)
+  - fastlane the app's Fastfile imports FirebaseFastfile; Pluginfile adds fastlane-plugin-firebase_app_distribution
+  - settings enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS"), and each code part included as a module

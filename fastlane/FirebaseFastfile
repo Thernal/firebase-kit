@@ -1,0 +1,85 @@
+# Firebase App Distribution lanes (firebase-kit). The app's Fastfile (build-kit's) imports this file:
+#
+#   import "FirebaseFastfile"
+#
+# and its Pluginfile adds `gem "fastlane-plugin-firebase_app_distribution"`. Building stays `make`'s
+# job; a lane builds through it and uploads. Flavors and apps come from gradle.properties, as for the
+# build. Distributing the production flavor is refused — it goes to the stores.
+#
+#   bundle exec fastlane android firebase app:customer flavor:beta [groups:qa] [notes:"…"]
+#   bundle exec fastlane ios firebase flavor:beta [groups:qa]
+#   scripts/distribute-firebase.sh android customer beta        (the same, from a shell)
+#
+# Credentials and ids come from the environment, never from the repository:
+#   GOOGLE_APPLICATION_CREDENTIALS         service-account JSON file with the App Distribution Admin role
+#   FIREBASE_APP_ID_ANDROID_<APP>_<FLAVOR> e.g. FIREBASE_APP_ID_ANDROID_CUSTOMER_BETA
+#   FIREBASE_APP_ID_IOS_<FLAVOR>           e.g. FIREBASE_APP_ID_IOS_BETA
+#   FIREBASE_GROUPS                        default tester groups, comma-separated (groups: overrides)
+#   IOS_BUNDLE_ID_<FLAVOR>, APP_STORE_CONNECT_API_KEY_PATH, MATCH_*   for the ad-hoc iOS build
+
+FIREBASE_ROOT = File.expand_path("..", __dir__)
+
+def firebase_property(key)
+  File.readlines(File.join(FIREBASE_ROOT, "gradle.properties"))
+      .map(&:strip)
+      .select { |line| line.start_with?("#{key}=") }
+      .map { |line| line.split("=", 2).last.strip }
+      .last
+end
+
+FIREBASE_FLAVORS = firebase_property("app.flavors").to_s.split(",").map(&:strip)
+FIREBASE_PRODUCTION = firebase_property("app.flavors.production") || FIREBASE_FLAVORS.last
+FIREBASE_ARTIFACTS = File.join(FIREBASE_ROOT, ".misc/artifacts")
+
+def firebase_flavor(options)
+  flavor = options[:flavor] || UI.user_error!("Pass flavor:<#{FIREBASE_FLAVORS.join('|')}>")
+  UI.user_error!("Unknown flavor '#{flavor}'. Expected one of: #{FIREBASE_FLAVORS.join(', ')}") unless FIREBASE_FLAVORS.include?(flavor)
+  UI.user_error!("#{flavor} is the production flavor: it goes to the stores, not to testers") if flavor == FIREBASE_PRODUCTION
+  flavor
+end
+
+def firebase_app_id(*parts)
+  name = (["FIREBASE_APP_ID"] + parts.map { |part| part.to_s.upcase.tr("-", "_") }).join("_")
+  ENV[name] || UI.user_error!("Set #{name} to the Firebase app id (Project settings → Your apps)")
+end
+
+def firebase_release(options, app_id:, file:)
+  UI.user_error!("No build artifact at #{file.inspect}") unless file && File.exist?(file)
+  firebase_app_distribution(
+    app: app_id,
+    android_artifact_path: (file if file.end_with?(".apk", ".aab")),
+    ipa_path: (file if file.end_with?(".ipa")),
+    groups: options[:groups] || ENV["FIREBASE_GROUPS"],
+    release_notes: options[:notes] || sh("git -C #{FIREBASE_ROOT} log -1 --format=%s").strip,
+    service_credentials_file: ENV.fetch("GOOGLE_APPLICATION_CREDENTIALS"),
+  )
+end
+
+platform :android do
+  desc "Builds one flavor of an app (release APK) and sends it to Firebase App Distribution"
+  lane :firebase do |options|
+    app = options[:app] || UI.user_error!("Pass app:<name>")
+    flavor = firebase_flavor(options)
+    sh("cd #{FIREBASE_ROOT} && make build-android APP=#{app} FLAVOR=#{flavor} BUILD_TYPE=release")
+    apk = Dir[File.join(FIREBASE_ARTIFACTS, "android", "#{app}-#{flavor}-release*.apk")].max_by { |f| File.mtime(f) }
+    firebase_release(options, app_id: firebase_app_id("android", app, flavor), file: apk)
+  end
+end
+
+platform :ios do
+  desc "Builds one flavor of the iOS app (ad hoc) and sends it to Firebase App Distribution"
+  lane :firebase do |options|
+    flavor = firebase_flavor(options)
+    api_key = app_store_connect_api_key(key_filepath: ENV.fetch("APP_STORE_CONNECT_API_KEY_PATH"))
+    match(type: "adhoc", app_identifier: ENV.fetch("IOS_BUNDLE_ID_#{flavor.upcase}"), readonly: true, api_key: api_key)
+    sh("cd #{FIREBASE_ROOT} && make build-ios-framework FLAVOR=#{flavor} BUILD_TYPE=release")
+    ipa = build_app(
+      project: File.join(FIREBASE_ROOT, "iosApp/iosApp.xcodeproj"),
+      scheme: "iosApp-#{flavor.capitalize}-Release",
+      configuration: "#{flavor.capitalize} Release",
+      export_method: "ad-hoc",
+      output_directory: File.join(FIREBASE_ARTIFACTS, "ios"),
+    )
+    firebase_release(options, app_id: firebase_app_id("ios", flavor), file: ipa)
+  end
+end

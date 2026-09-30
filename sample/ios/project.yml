@@ -1,0 +1,62 @@
+# The iOS sample. `xcodegen generate` (in this directory) rebuilds Sample.xcodeproj from this file;
+# the generated project is committed so opening the sample needs Xcode only. It compiles the kit's
+# own Swift bridges (../../ios/Firebase) — the check that they match the Kotlin framework.
+name: Sample
+options:
+  bundleIdPrefix: io.thernal.firebasekit
+  deploymentTarget:
+    iOS: "16.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    CODE_SIGN_STYLE: Automatic
+packages:
+  Firebase:
+    url: https://github.com/firebase/firebase-ios-sdk
+    from: "12.19.0"
+  GoogleSignIn:
+    url: https://github.com/google/GoogleSignIn-iOS
+    majorVersion: "9.2.0"
+targets:
+  Sample:
+    type: application
+    platform: iOS
+    sources:
+      - Sample
+      - path: ../../ios/Firebase
+        group: Firebase
+    dependencies:
+      - package: Firebase
+        product: FirebaseCore
+      - package: Firebase
+        product: FirebaseCrashlytics
+      - package: Firebase
+        product: FirebaseRemoteConfig
+      - package: Firebase
+        product: FirebaseMessaging
+      - package: Firebase
+        product: FirebaseAuth
+      - package: GoogleSignIn
+        product: GoogleSignIn
+    info:
+      path: Sample/Info.plist
+      properties:
+        CFBundleDisplayName: firebase-kit
+        UILaunchScreen: {}
+        # Compose Multiplatform refuses to start without it: high refresh rates need it on iPhones.
+        CADisableMinimumFrameDurationOnPhone: true
+        UIBackgroundModes: [remote-notification]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.thernal.firebasekit.sample
+        FRAMEWORK_SEARCH_PATHS: "$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)"
+        OTHER_LDFLAGS: "$(inherited) -framework SampleShared -ObjC"
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+        # The framework is built for arm64 simulators only (iosSimulatorArm64), as every kit targets.
+        "EXCLUDED_ARCHS[sdk=iphonesimulator*]": x86_64
+    preBuildScripts:
+      - name: Compile Kotlin framework
+        basedOnDependencyAnalysis: false
+        script: |
+          cd "$SRCROOT/../.."
+          ./gradlew :sample:shared:embedAndSignAppleFrameworkForXcode
