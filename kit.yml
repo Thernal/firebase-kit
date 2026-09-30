@@ -2,6 +2,7 @@
 # (the skill-manager skill in github.com/Thernal/knowledge), which parses it with
 # sed and awk — so keep to this shape: `key: value` scalars, `key:` followed by
 # `  - item` lines, `#` comments. No nesting, no quoting, no inline lists.
+# Without skill-manager: README.md → Installing → "Without it" copies and renames by hand.
 
 name: firebase-kit
 

@@ -34,18 +34,48 @@ when (val result = socialSignIn.signInWithGoogle()) {
 | [`firebase/DESIGN.md`](firebase/DESIGN.md) | why each part has its shape, and what changed from the apps it came from |
 | [`skills/firebase-kit`](skills/firebase-kit/SKILL.md) | the same for an agent working in an app that uses the kit |
 
-## For AI agents
+## Installing
 
-An application takes the kit by copy:
+An application takes the kit **by copy**, not as a dependency: the code is copied into the app, renamed to the app's own package, and belongs to the app from then on. Nothing is published to a Maven repository.
+
+### With skill-manager
+
+If you have access to the author's knowledge repository (`github.com/Thernal/knowledge`), its **skill-manager** skill does all of it — copy, rename, the skill, and later updates:
 
 ```sh
-skillctl.sh kit install firebase-kit --package <its package> --module <its module path> --alias <its plugin alias> \
-    --framework <its Kotlin framework> --place ios/Firebase=<its Xcode source folder>/Firebase
+skillctl.sh kit install firebase-kit --package com.example.app --module :core:firebase --alias app \
+    --framework ComposeApp --place ios/Firebase=iosApp/iosApp/Firebase
 ```
 
-That copies the modules below renamed, the Swift bridges into the Xcode folder with their `import`
-renamed to the app's framework, `scripts/distribute-firebase.sh` and `fastlane/FirebaseFastfile`, installs
-the `firebase-kit` skill, and records it all in `kits.lock`. `kit.yml` lists what the app provides.
+It copies the `code` parts of [`kit.yml`](kit.yml) renamed, places its `files` where the app keeps them (`--place`), installs the `firebase-kit` skill and records the copy in `kits.lock`. `kit status` then shows what changed upstream and what the app edited; `kit update` merges the kit's changes three ways, keeping the app's edits. The install prints what the app must provide (`requires`).
+
+### Without it
+
+The same by hand, from a clone of this repository.
+
+1. **Copy** the paths listed under `code` in [`kit.yml`](kit.yml) into the app, under the module path the app gives them: `firebase/…` → `core/firebase/…`; copy the paths under `files` where the app keeps such files (`ios/Firebase`, `scripts/distribute-firebase.sh`, `fastlane/FirebaseFastfile`). Note the commit you copied (`git rev-parse HEAD`) — updates start from it.
+2. **Rename** in everything copied:
+
+   | In the kit | Becomes | Where |
+   |---|---|---|
+   | `io.thernal.firebasekit` | the app's package, e.g. `com.example.app` | sources, build files; and the directories `io/thernal/firebasekit` |
+   | `:firebase:` and `":firebase"`, `projects.firebase.` | the module path, e.g. `:core:firebase:`, `projects.core.firebase.` | build files |
+   | `libs.plugins.firebasekit.` | the app's catalog alias, e.g. `libs.plugins.app.` | build files |
+   | `import SampleShared` | `import` of the app's Kotlin framework | Swift files |
+
+   ```sh
+   # in the app, after copying — perl, so it runs the same on macOS and Linux
+   grep -rlI -e io.thernal.firebasekit -e io/thernal/firebasekit -e :firebase -e plugins.firebasekit. -e SampleShared core/firebase iosApp/iosApp/Firebase scripts/distribute-firebase.sh fastlane/FirebaseFastfile \
+     | xargs perl -pi -e 's/\Qio.thernal.firebasekit\E/com.example.app/g; s{\Qio/thernal/firebasekit\E}{com/example/app}g; s/\Q:firebase:\E/:core:firebase:/g; s/"\Q:firebase\E"/":core:firebase"/g; s/projects\.\Qfirebase\E\./projects.core.firebase./g; s/libs\.plugins\.\Qfirebasekit\E\./libs.plugins.app./g; s/^(\s*(?:@\w+\s+)?)import \QSampleShared\E$/$1import ComposeApp/'
+   find core/firebase -depth -type d -path '*/io/thernal/firebasekit' | while read -r d; do
+     mkdir -p "${d%/io/thernal/firebasekit}/com/example" && mv "$d" "${d%/io/thernal/firebasekit}/com/example/app"
+   done
+   find core/firebase -depth -type d -empty -delete
+   ```
+
+3. **Provide** what the copy expects — the `requires` list in [`kit.yml`](kit.yml): convention plugins (build-kit's, or the ones in this repository's `build-logic/convention`), catalog entries, settings — and, where listed, platform setup.
+4. **The skill** (optional): copy [`skills/firebase-kit`](skills/firebase-kit) into the app's skills directory (`.claude/skills/` for Claude Code), with the same renames, so an agent working in the app knows the kit.
+5. **Updates** are yours to carry: `git diff <the commit you copied> <a newer one> -- <the code paths>` in the kit shows what changed; apply what you want, renamed the same way.
 
 ## Layout
 

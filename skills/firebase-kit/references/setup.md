@@ -7,6 +7,8 @@ skillctl.sh kit install firebase-kit --package <app package> --module <e.g. :cor
     --framework <the app's Kotlin framework, e.g. ComposeApp> --place ios/Firebase=<Xcode source folder>/Firebase
 ```
 
+Without skill-manager, the kit's `README.md` → Installing → *Without it* does the same by hand (copy, rename, provide).
+
 The Kotlin modules land under the module path; the Swift bridges in the Xcode folder with `import` renamed;
 `scripts/distribute-firebase.sh` and `fastlane/FirebaseFastfile` at the root. The catalog needs
 `firebase-bom`, `firebase-crashlytics`, `firebase-config`, `firebase-messaging`, `firebase-auth`,
