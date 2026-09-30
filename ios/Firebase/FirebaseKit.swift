@@ -1,6 +1,6 @@
 // firebase-kit: the app's side of the Swift bridges. Installed into the Xcode project by
 // `skillctl.sh kit install firebase-kit --place ios/Firebase=<the app's source folder>/Firebase`,
-// with `import SampleShared` renamed to the app's Kotlin framework.
+// with the Kotlin framework import below renamed to the app's own.
 
 import FirebaseCore
 import FirebaseMessaging
