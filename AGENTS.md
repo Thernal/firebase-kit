@@ -41,6 +41,12 @@ about delivery.
 | `skills/firebase-kit` | the same for an agent in an app that took the kit | the public surface changes — `kit status` flags a skill older than the surface (LAG) |
 | `kit.yml` | what an app copies and what its build must provide | a module, file part or requirement changes |
 
+The skill's frontmatter has to load in Claude Code and in Codex alike (knowledge `docs/SKILLS.md`): a
+`description` of at most 1024 characters — 600–900 in practice, since an app's renamed package can
+lengthen it and every installed skill shares one context budget — valid YAML (no `": "` or `" #"` in a
+plain one-line description; write `—`), and only the keys `name` and `description`. skill-manager warns
+in an app whose copy breaks this; the fix is made here.
+
 Docs are read in place by apps (`knowledgectl.sh kit firebase-kit read <path>`), never copied. When `kit.yml`
 or `README.md` changes, the knowledge card `kits/firebase-kit.md` in `Thernal/knowledge` needs its `card_sha`
 bumped (`scripts/check-corpus.py --kits` says so).
