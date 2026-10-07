@@ -9,7 +9,7 @@ crash.log("checkout: payment sheet opened")
 crash.recordException(unexpected)                  // never a typed domain failure
 ```
 
-arch-kit: a one-file `FailureReporter` forwarding to `recordException` (`firebase/README.md`).
+arch-kit: a one-file `FailureReporter` forwarding to `recordException` (`firebase/crash/api/README.md`).
 
 ## Remote config
 
@@ -22,7 +22,7 @@ remoteConfig.fetchAndActivate()   // startup, resume; false when throttled (1 h)
 ```
 
 Types: String, Boolean, Int, Long, Double. An unparsable server value reads as the default. For
-`regress` or tests replace `ConfigSourceWiring` with a `StaticRemoteConfigSource`, or use
+`regress` or tests replace `ConfigSourceProvidersModule` with a `StaticRemoteConfigSource`, or use
 `testRemoteConfig("key" to "value")`.
 
 ## Push

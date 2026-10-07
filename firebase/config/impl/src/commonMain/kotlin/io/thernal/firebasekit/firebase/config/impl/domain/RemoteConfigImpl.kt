@@ -18,7 +18,7 @@ import kotlin.time.TimeSource
  * The value store over a [RemoteConfigSource]: what it activated on an earlier launch at first, the
  * latest after [fetchAndActivate]. Fetches closer together than [minimumFetchInterval] are skipped.
  */
-class DefaultRemoteConfig(
+class RemoteConfigImpl(
     private val source: RemoteConfigSource,
     private val minimumFetchInterval: Duration = 1.hours,
     private val timeSource: TimeSource = TimeSource.Monotonic,
@@ -60,24 +60,4 @@ class DefaultRemoteConfig(
     private fun readActivated(): Map<String, String> {
         return runCatching { source.activated() }.getOrDefault(emptyMap())
     }
-}
-
-/** [raw] as the type of [default]; [default] when absent or unparsable. */
-@Suppress("UNCHECKED_CAST")
-fun <T : Any> decodeConfigValue(
-    raw: String?,
-    default: T,
-): T {
-    if (raw == null) {
-        return default
-    }
-    val value: Any? = when (default) {
-        is String -> raw
-        is Boolean -> raw.trim().lowercase().toBooleanStrictOrNull()
-        is Int -> raw.trim().toIntOrNull()
-        is Long -> raw.trim().toLongOrNull()
-        is Double -> raw.trim().toDoubleOrNull()
-        else -> null
-    }
-    return (value ?: default) as T
 }

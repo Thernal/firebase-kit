@@ -10,7 +10,7 @@ import io.thernal.firebasekit.firebase.auth.impl.data.platformSocialSignIn
 /** Binds [SocialSignIn] to Firebase Authentication. */
 @BindingContainer
 @ContributesTo(AppScope::class)
-interface AuthWiring {
+interface AuthProvidersModule {
     companion object {
         @Provides
         fun provideSocialSignIn(): SocialSignIn {

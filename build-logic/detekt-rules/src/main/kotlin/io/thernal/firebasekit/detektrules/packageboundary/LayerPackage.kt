@@ -23,7 +23,14 @@ internal enum class Layer(val packageName: String) {
 
 internal data class ModulePackage(val moduleRoot: String, val remainder: String?) {
     val topLevelPackage: String? get() = remainder?.substringBefore('.')
-    val layer: Layer? get() = Layer.of(topLevelPackage)
+
+    /**
+     * The layer a module is named after — `core.presentation.api` is `presentation` throughout — so
+     * its packages do not repeat it. Null for a module named after a capability (`features.profile.api`).
+     */
+    val namedLayer: Layer? get() = Layer.of(moduleRoot.substringBeforeLast('.').substringAfterLast('.'))
+
+    val layer: Layer? get() = namedLayer ?: Layer.of(topLevelPackage)
 }
 
 internal data class ModuleLayer(val moduleRoot: String, val layer: Layer)

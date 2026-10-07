@@ -11,7 +11,7 @@ import io.thernal.firebasekit.firebase.crash.impl.data.platformCrashReporter
 /** Binds [CrashReporter] to Crashlytics. An app without crash reporting leaves this container out. */
 @BindingContainer
 @ContributesTo(AppScope::class)
-interface CrashWiring {
+interface CrashProvidersModule {
     companion object {
         @Provides
         @SingleIn(AppScope::class)

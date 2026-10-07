@@ -55,6 +55,10 @@ skill:
 docs:
   - README.md
   - firebase/README.md
+  - firebase/crash/api/README.md
+  - firebase/config/api/README.md
+  - firebase/messaging/api/README.md
+  - firebase/auth/api/README.md
   - firebase/DESIGN.md
   - docs
 

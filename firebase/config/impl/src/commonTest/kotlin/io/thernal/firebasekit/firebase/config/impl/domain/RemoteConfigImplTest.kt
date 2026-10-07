@@ -46,10 +46,10 @@ private class FakeSource(
     }
 }
 
-class DefaultRemoteConfigTest {
+class RemoteConfigImplTest {
     @Test
     fun `a key reads its default before anything is fetched`() {
-        val config = DefaultRemoteConfig(FakeSource())
+        val config = RemoteConfigImpl(FakeSource())
 
         assertFalse(config.get(Flags.PROMO))
         assertEquals("hi", config.get(GREETING))
@@ -57,7 +57,7 @@ class DefaultRemoteConfigTest {
 
     @Test
     fun `values activated on an earlier launch are read at once`() {
-        val config = DefaultRemoteConfig(FakeSource(activated = mapOf("show_promo" to "true", "min_build" to "42")))
+        val config = RemoteConfigImpl(FakeSource(activated = mapOf("show_promo" to "true", "min_build" to "42")))
 
         assertTrue(config.get(Flags.PROMO))
         assertEquals(42, config.get(MIN_BUILD))
@@ -67,7 +67,7 @@ class DefaultRemoteConfigTest {
     fun `a fetch replaces the values and observers see the change`() {
         runTest {
             val source = FakeSource(next = mapOf("greeting" to "hello"))
-            val config = DefaultRemoteConfig(source)
+            val config = RemoteConfigImpl(source)
             val seen = mutableListOf<String>()
             val job = launch { config.observe(GREETING).take(2).toList(seen) }
             runCurrent()
@@ -83,7 +83,7 @@ class DefaultRemoteConfigTest {
     fun `a failed fetch keeps what was activated`() {
         runTest {
             val source = FakeSource(activated = mapOf("show_promo" to "true"), isFailing = true)
-            val config = DefaultRemoteConfig(source)
+            val config = RemoteConfigImpl(source)
 
             assertFalse(config.fetchAndActivate())
 
@@ -96,7 +96,7 @@ class DefaultRemoteConfigTest {
         runTest {
             val time = TestTimeSource()
             val source = FakeSource()
-            val config = DefaultRemoteConfig(source = source, minimumFetchInterval = 10.minutes, timeSource = time)
+            val config = RemoteConfigImpl(source = source, minimumFetchInterval = 10.minutes, timeSource = time)
 
             assertTrue(config.fetchAndActivate())
             assertFalse(config.fetchAndActivate())
@@ -111,7 +111,7 @@ class DefaultRemoteConfigTest {
     fun `a failed fetch does not start the interval`() {
         runTest {
             val source = FakeSource(isFailing = true)
-            val config = DefaultRemoteConfig(
+            val config = RemoteConfigImpl(
                 source = source,
                 minimumFetchInterval = 10.minutes,
                 timeSource = TestTimeSource(),
@@ -128,7 +128,7 @@ class DefaultRemoteConfigTest {
     fun `observing an unchanged key emits once`() {
         runTest {
             val source = FakeSource(next = mapOf("greeting" to "hi"))
-            val config = DefaultRemoteConfig(source)
+            val config = RemoteConfigImpl(source)
 
             config.fetchAndActivate()
 

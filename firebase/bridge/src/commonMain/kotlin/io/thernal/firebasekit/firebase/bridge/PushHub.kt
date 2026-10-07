@@ -8,8 +8,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 
-private const val MESSAGE_BUFFER = 16
-
 /**
  * Where push events enter Kotlin. The Android messaging service and the iOS Swift bridge are created
  * by the system, outside the dependency graph, so they deliver here and `messaging/impl` reads from
@@ -58,3 +56,5 @@ object PushHub {
         mutableTokens.tryEmit(token)
     }
 }
+
+private const val MESSAGE_BUFFER = 16

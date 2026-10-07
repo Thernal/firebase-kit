@@ -35,7 +35,8 @@ about delivery.
 | File | Holds | Update when |
 |---|---|---|
 | `README.md` | what the kit does, its layout, how it is built | anything a user of the kit sees changes |
-| `firebase/README.md` | why each part has its shape | a decision or trade-off changes |
+| `firebase/README.md` | setup and App Distribution | setup or distribution changes |
+| `firebase/<capability>/api/README.md` | how to use one capability, task by task | its api or behaviour changes |
 | `firebase/DESIGN.md` | why each part has its shape | a decision or trade-off changes |
 | `docs/todos/` | open questions, one file each | a question opens or is decided (then delete it) |
 | `skills/firebase-kit` | the same for an agent in an app that took the kit | the public surface changes — `kit status` flags a skill older than the surface (LAG) |

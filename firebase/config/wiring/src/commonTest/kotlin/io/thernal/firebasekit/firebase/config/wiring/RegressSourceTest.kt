@@ -15,8 +15,8 @@ import kotlin.test.assertEquals
 
 /** What the `regress` flavor contributes: fixed values in place of Firebase. */
 @BindingContainer
-@ContributesTo(AppScope::class, replaces = [ConfigSourceWiring::class])
-interface RegressConfigSourceWiring {
+@ContributesTo(AppScope::class, replaces = [ConfigSourceProvidersModule::class])
+interface RegressConfigSourceProvidersModule {
     companion object {
         @Provides
         fun provideRemoteConfigSource(): RemoteConfigSource {

@@ -2,9 +2,7 @@ package io.thernal.firebasekit.firebase.auth.impl.data
 
 import android.app.Activity
 import android.app.Application
-import android.content.Context
 import android.os.Bundle
-import androidx.startup.Initializer
 import java.lang.ref.WeakReference
 
 /**
@@ -51,15 +49,5 @@ internal object ResumedActivity : Application.ActivityLifecycleCallbacks {
 
     override fun onActivityDestroyed(activity: Activity) {
         // Only resume and pause matter.
-    }
-}
-
-class ResumedActivityInitializer : Initializer<Unit> {
-    override fun create(context: Context) {
-        (context.applicationContext as Application).registerActivityLifecycleCallbacks(ResumedActivity)
-    }
-
-    override fun dependencies(): List<Class<out Initializer<*>>> {
-        return emptyList()
     }
 }

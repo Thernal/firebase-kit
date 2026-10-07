@@ -2,7 +2,7 @@ package io.thernal.firebasekit.firebase.testing
 
 import io.thernal.firebasekit.firebase.config.api.domain.RemoteConfig
 import io.thernal.firebasekit.firebase.config.impl.data.StaticRemoteConfigSource
-import io.thernal.firebasekit.firebase.config.impl.domain.DefaultRemoteConfig
+import io.thernal.firebasekit.firebase.config.impl.domain.RemoteConfigImpl
 import kotlin.time.Duration
 
 /**
@@ -10,5 +10,5 @@ import kotlin.time.Duration
  * their defaults. `testRemoteConfig("show_promo_banner" to "true")`.
  */
 fun testRemoteConfig(vararg values: Pair<String, String>): RemoteConfig {
-    return DefaultRemoteConfig(source = StaticRemoteConfigSource(values.toMap()), minimumFetchInterval = Duration.ZERO)
+    return RemoteConfigImpl(source = StaticRemoteConfigSource(values.toMap()), minimumFetchInterval = Duration.ZERO)
 }
