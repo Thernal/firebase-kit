@@ -4,8 +4,10 @@ import dev.detekt.gradle.Detekt
 import dev.detekt.gradle.extensions.DetektExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 
 /**
@@ -56,8 +58,32 @@ internal class QualityConventionPlugin : Plugin<Project> {
             val typeResolvedAnalysis = tasks.withType(Detekt::class.java).matching { task ->
                 isCountedAnalysis(task.name)
             }
-            tasks.named("check") { dependsOn(typeResolvedAnalysis) }
+            val buildLogicVerification = registerBuildLogicVerification()
+            tasks.named("check") {
+                dependsOn(typeResolvedAnalysis)
+                dependsOn(buildLogicVerification)
+            }
         }
+    }
+}
+
+/**
+ * `verifyBuildLogic` in every module this plugin is applied to, part of its `check`: the build logic is
+ * the repository's, and each module's check guards it. The task is up to date unless a synced file or
+ * the manifest changed, so the repeats cost nothing.
+ */
+private fun Project.registerBuildLogicVerification(): TaskProvider<VerifyBuildLogicTask> {
+    val buildLogic = rootProject.layout.projectDirectory.dir("build-logic")
+    return tasks.register<VerifyBuildLogicTask>(VERIFY_BUILD_LOGIC_TASK) {
+        group = "verification"
+        description = "Fails when build-logic/ was edited here instead of synced from conventions-kit."
+        this.buildLogic.set(buildLogic)
+        syncedFiles.from(
+            rootProject.fileTree(buildLogic) {
+                BuildLogicManifest.IGNORED_DIRECTORIES.forEach { directory -> exclude("**/$directory/**") }
+            },
+        )
+        stamp.set(layout.buildDirectory.file("verify-build-logic/stamp"))
     }
 }
 
@@ -67,3 +93,5 @@ internal fun isCountedAnalysis(name: String): Boolean {
     val sourceSet = name.removePrefix("detekt").removeSuffix("SourceSet")
     return !sourceSet.startsWith("Common") && !sourceSet.startsWith("Android")
 }
+
+private const val VERIFY_BUILD_LOGIC_TASK = "verifyBuildLogic"

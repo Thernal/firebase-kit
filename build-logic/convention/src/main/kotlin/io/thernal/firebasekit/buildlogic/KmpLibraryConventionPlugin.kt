@@ -27,8 +27,8 @@ class KmpLibraryConventionPlugin : Plugin<Project> {
                 freeCompilerArgs.add("-Xexpect-actual-classes")
             }
 
-            // The same target set as nav-kit, so the two kits can sit in one application. Compose
-            // Multiplatform publishes more (desktop, web, iosX64); nothing here builds for them yet.
+            // The target set every kit builds for, so any of them can sit in one application. Compose
+            // Multiplatform publishes more (desktop, web, iosX64); no kit builds for them yet.
             androidTarget(namespace, catalog)
             iosArm64()
             iosSimulatorArm64()
