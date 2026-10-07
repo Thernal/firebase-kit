@@ -13,7 +13,7 @@ import io.thernal.firebasekit.firebase.messaging.impl.data.pushMessageStream
 /** Binds [PushMessaging] and [PushMessageStream]. */
 @BindingContainer
 @ContributesTo(AppScope::class)
-interface MessagingWiring {
+interface MessagingProvidersModule {
     companion object {
         @Provides
         @SingleIn(AppScope::class)

@@ -30,7 +30,8 @@ when (val result = socialSignIn.signInWithGoogle()) {
 | Read | For |
 |---|---|
 | this file | what is here and how it is built |
-| [`firebase/README.md`](firebase/README.md) | setup (Gradle, Xcode, the bridges, the app delegate), then each capability task by task, App Distribution |
+| [`firebase/README.md`](firebase/README.md) | setup (Gradle, Xcode, the bridges, the app delegate), App Distribution |
+| [`crash`](firebase/crash/api/README.md), [`config`](firebase/config/api/README.md), [`messaging`](firebase/messaging/api/README.md), [`auth`](firebase/auth/api/README.md) `api/README.md` | each capability, task by task |
 | [`firebase/DESIGN.md`](firebase/DESIGN.md) | why each part has its shape, and what changed from the apps it came from |
 | [`skills/firebase-kit`](skills/firebase-kit/SKILL.md) | the same for an agent working in an app that uses the kit |
 
@@ -82,7 +83,7 @@ The same by hand, from a clone of this repository.
 | Part | Holds | Depends on |
 |---|---|---|
 | `firebase/crash/{api,impl,wiring}` | `CrashReporter`; Crashlytics | Crashlytics (Android) |
-| `firebase/config/{api,impl,wiring}` | `RemoteConfigKey<T>`, `ConfigKey`, `RemoteConfig`, `RemoteConfigSource`; `DefaultRemoteConfig`, `StaticRemoteConfigSource`, the Firebase source | Remote Config (Android) |
+| `firebase/config/{api,impl,wiring}` | `RemoteConfigKey<T>`, `ConfigKey`, `RemoteConfig`, `RemoteConfigSource`; `RemoteConfigImpl`, `StaticRemoteConfigSource`, the Firebase source | Remote Config (Android) |
 | `firebase/messaging/{api,impl,wiring}` | `PushMessage`, `PushMessaging`, `PushMessageStream`; the Android messaging service, notification and `PushIntents` | Messaging, core, lifecycle-process (Android) |
 | `firebase/auth/{api,impl,wiring}` | `SocialSignIn`, `SignInResult`; Credential Manager (Google) and Firebase's Apple flow | Auth, Credential Manager, Google ID, startup (Android) |
 | `firebase/bridge` | the interfaces the Swift implements, `FirebaseBridges`, `PushHub` — exported into the iOS framework | messaging/api |

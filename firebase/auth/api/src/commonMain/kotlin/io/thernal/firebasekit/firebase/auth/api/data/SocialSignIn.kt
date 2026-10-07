@@ -13,17 +13,3 @@ interface SocialSignIn {
     /** Signs out of Firebase (and Google, so the next sign-in offers the account picker again). */
     suspend fun signOut()
 }
-
-sealed interface SignInResult {
-    /** [idToken] is a Firebase ID token for the backend; [userId] the Firebase user id. */
-    data class Success(
-        val idToken: String,
-        val userId: String,
-    ) : SignInResult
-
-    /** The user closed the sign-in sheet. Nothing to show. */
-    data object Cancelled : SignInResult
-
-    /** Sign-in could not complete; [message] is for logs, not for the user. */
-    data class Failed(val message: String) : SignInResult
-}

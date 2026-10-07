@@ -7,13 +7,13 @@ description: Writes, reviews and debugs Firebase code in Compose Multiplatform a
 
 firebase-kit brings Crashlytics, Remote Config, Cloud Messaging and Firebase Authentication (Google, Apple)
 to Compose Multiplatform: Android through the SDKs, iOS through Swift bridges in the app's Xcode project.
-Guide: https://github.com/Thernal/firebase-kit — `firebase/README.md` (setup, each capability),
+Guide: https://github.com/Thernal/firebase-kit — `firebase/README.md` (setup), `firebase/<capability>/api/README.md` (each capability),
 `firebase/DESIGN.md` (why).
 
 ## 1. Orient first
 
 ```sh
-grep -rn --include=*.kt -e "CrashWiring\|ConfigWiring\|MessagingWiring\|AuthWiring" . | head   # which capabilities are wired
+grep -rn --include=*.kt -e "CrashProvidersModule\|ConfigProvidersModule\|MessagingProvidersModule\|AuthProvidersModule" . | head   # which capabilities are wired
 grep -rn --include=*.kt -e "RemoteConfigKey<" . | head          # existing flag enums — copy their shape
 grep -rn --include=*.swift -e "FirebaseKit\." . | head          # the app delegate calls
 grep -rn --include=*.kt -e "PushIntents.handle" -e "\.opened" . | head

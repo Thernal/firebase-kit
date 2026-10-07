@@ -1,8 +1,6 @@
 package io.thernal.firebasekit.firebase.messaging.impl.data
 
 import io.thernal.firebasekit.firebase.bridge.PushHub
-import io.thernal.firebasekit.firebase.messaging.api.data.PushMessage
-import io.thernal.firebasekit.firebase.messaging.api.data.PushMessageStream
 import io.thernal.firebasekit.firebase.messaging.api.data.PushMessaging
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
@@ -10,16 +8,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 
-/** The platform half of [PushMessaging]: the SDK on Android, the Swift bridge on iOS. */
-internal interface PushPlatform {
-    suspend fun token(): String
-
-    suspend fun subscribe(topic: String)
-
-    suspend fun unsubscribe(topic: String)
-}
-
-internal class DefaultPushMessaging(
+internal class PushMessagingImpl(
     private val platform: PushPlatform,
     private val refreshedTokens: Flow<String> = PushHub.tokens,
 ) : PushMessaging {
@@ -55,18 +44,7 @@ internal class DefaultPushMessaging(
     }
 }
 
-internal object HubPushMessageStream : PushMessageStream {
-    override val messages: Flow<PushMessage> = PushHub.messages
-    override val opened: Flow<PushMessage> = PushHub.opened
-}
-
 /** Messaging for the platform this is compiled for; `wiring` binds it. */
 fun platformPushMessaging(): PushMessaging {
-    return DefaultPushMessaging(platform = platformPushPlatform())
+    return PushMessagingImpl(platform = platformPushPlatform())
 }
-
-fun pushMessageStream(): PushMessageStream {
-    return HubPushMessageStream
-}
-
-internal expect fun platformPushPlatform(): PushPlatform

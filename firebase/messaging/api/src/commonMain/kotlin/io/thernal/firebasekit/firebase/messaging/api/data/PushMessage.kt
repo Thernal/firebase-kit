@@ -9,7 +9,12 @@ data class PushMessage(
     val body: String?,
     val data: Map<String, String>,
     val deepLink: String?,
-)
+) {
+    companion object {
+        /** The data key a message's destination travels in. */
+        const val DEEP_LINK_KEY = "deepLink"
+    }
+}
 
 /** Builds a [PushMessage]; the `deepLink` data key wins over the notification's own link. */
 fun pushMessage(
@@ -22,9 +27,6 @@ fun pushMessage(
         title = title?.takeIf(String::isNotEmpty),
         body = body?.takeIf(String::isNotEmpty),
         data = data,
-        deepLink = data[DEEP_LINK_KEY] ?: link,
+        deepLink = data[PushMessage.DEEP_LINK_KEY] ?: link,
     )
 }
-
-/** The data key a message's destination travels in. */
-const val DEEP_LINK_KEY = "deepLink"

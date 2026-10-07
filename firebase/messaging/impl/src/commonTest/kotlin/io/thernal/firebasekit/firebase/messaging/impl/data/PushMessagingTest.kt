@@ -37,7 +37,7 @@ class PushMessagingTest {
     fun `tokens start with the current one and follow refreshes without repeats`() {
         runTest {
             val refreshes = MutableSharedFlow<String>(extraBufferCapacity = 4)
-            val messaging = DefaultPushMessaging(platform = FakePlatform(current = "t1"), refreshedTokens = refreshes)
+            val messaging = PushMessagingImpl(platform = FakePlatform(current = "t1"), refreshedTokens = refreshes)
             val seen = mutableListOf<String>()
             val job = launch { messaging.tokens.take(2).toList(seen) }
             runCurrent()
@@ -54,7 +54,7 @@ class PushMessagingTest {
     fun `without a token yet the stream waits for the first refresh`() {
         runTest {
             val refreshes = MutableSharedFlow<String>(extraBufferCapacity = 4)
-            val messaging = DefaultPushMessaging(platform = FakePlatform(current = null), refreshedTokens = refreshes)
+            val messaging = PushMessagingImpl(platform = FakePlatform(current = null), refreshedTokens = refreshes)
             val first = launch { assertEquals("apns-ready", messaging.tokens.first()) }
             runCurrent()
 
@@ -67,7 +67,7 @@ class PushMessagingTest {
     fun `topics go to the platform`() {
         runTest {
             val platform = FakePlatform()
-            val messaging = DefaultPushMessaging(platform = platform, refreshedTokens = MutableSharedFlow())
+            val messaging = PushMessagingImpl(platform = platform, refreshedTokens = MutableSharedFlow())
 
             messaging.subscribe("news")
             messaging.unsubscribe("news")
