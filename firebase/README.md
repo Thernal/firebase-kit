@@ -105,15 +105,17 @@ Every capability has a fake in `firebase/testing`; each guide shows its own.
 
 ## App Distribution
 
-Non-production builds to testers, through build-kit's `make` and fastlane:
+Non-production builds to testers. Android goes through the Firebase CLI, iOS through fastlane:
 
 ```sh
-scripts/distribute-firebase.sh android customer beta qa-team
+make distribute-android APP=customer FLAVOR=beta BUILD_TYPE=release TESTER_GROUPS=qa-team   # BUMP=1 DRY_RUN=1 NOTES="…"
 scripts/distribute-firebase.sh ios beta
 ```
 
-The app's Fastfile adds `import "FirebaseFastfile"`, its Pluginfile
-`gem "fastlane-plugin-firebase_app_distribution"`. The environment carries
-`GOOGLE_APPLICATION_CREDENTIALS` and the app ids — `fastlane/.env.firebase.example` lists them; copy it
-to `fastlane/.env.firebase` (keep it out of git) and pass `--env firebase`, or set them in CI. The production
-flavor is refused: it goes to the stores.
+The Android path needs no Ruby: it builds with build-kit's `make build-android`, checks the APK is signed (a
+non-production variant is signed with the shared debug keystore, else AGP's debug key), reads the Firebase app id
+from the flavor's `google-services.json` and sends it with `firebase appdistribution:distribute` (`firebase login`, or
+`GOOGLE_APPLICATION_CREDENTIALS`). For iOS the app's Fastfile adds `import "FirebaseFastfile"`, its Pluginfile
+`gem "fastlane-plugin-firebase_app_distribution"`. `fastlane/.env.firebase.example` lists the environment; copy it
+to `fastlane/.env.firebase` (keep it out of git), or set it in CI. The production flavor is refused: it goes to the
+stores.

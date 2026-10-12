@@ -77,4 +77,5 @@ requires:
   - ios Xcode adds firebase-ios-sdk and GoogleSignIn-iOS 9.x via SPM, the placed ios/Firebase folder to the app target, GoogleService-Info.plist per flavor, push and Sign in with Apple capabilities
   - ios the app delegate calls FirebaseKit.configure, didRegisterForRemoteNotifications, didReceiveRemoteNotification, open(url:)
   - fastlane the app's Fastfile imports FirebaseFastfile; Pluginfile adds fastlane-plugin-firebase_app_distribution
+  - scripts build-kit's scripts/app-properties.sh and bump-version-code.sh and its make build-android — the Android path of distribute-firebase.sh (the Firebase CLI, or npx)
   - settings enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS"), and each code part included as a module

@@ -89,7 +89,7 @@ The same by hand, from a clone of this repository.
 | `firebase/bridge` | the interfaces the Swift implements, `FirebaseBridges`, `PushHub` — exported into the iOS framework | messaging/api |
 | `firebase/testing` | `FakeCrashReporter`, `testRemoteConfig()`, `FakePushMessaging`, `FakePushMessageStream`, `FakeSocialSignIn` | the apis |
 | `ios/Firebase` | `FirebaseKit.swift` and one bridge per capability | Firebase iOS SDK, GoogleSignIn (SPM) |
-| `fastlane/FirebaseFastfile`, `scripts/distribute-firebase.sh`, `fastlane/.env.firebase.example` | App Distribution lanes and their environment | fastlane, build-kit's `make` |
+| `fastlane/FirebaseFastfile`, `scripts/distribute-firebase.sh`, `fastlane/.env.firebase.example` | App Distribution — Android through the Firebase CLI, iOS through the lanes — and their environment | the Firebase CLI (or `npx`), fastlane, build-kit's `make` and scripts |
 | `config/firebase` | example `google-services.json` and `GoogleService-Info.plist`, and what the kit reads from them | — |
 | `sample/{shared,android,ios}` | one screen using all four | the kit — never copied |
 
