@@ -8,7 +8,9 @@
 #   --groups a,b     tester groups (aliases from the console); default $FIREBASE_GROUPS
 #   --testers x@y,…  single testers (emails)
 #   --notes "text"   release notes; default "<flavor> <build type> · <short sha> (<branch>)"
-#   --bump           bump the flavor's versionCode first (scripts/bump-version-code.sh; nothing is committed)
+#   --no-bump        keep the versionCode: by default a build that is sent first raises the flavor's
+#                    versionCode by one (scripts/bump-version-code.sh, in the working tree; nothing is committed).
+#                    --no-build and --dry-run never bump: the APK sent is the one built before.
 #   --no-build       send the APK of the last build instead of building one
 #   --dry-run        build and check, say what would be sent, send nothing
 # With neither groups nor testers the build is uploaded and distributed to nobody.
@@ -32,7 +34,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/app-properties.sh"
 cd "$REPO_ROOT"
 
 usage() {
-  sed -n '2,26p' "$0" | sed 's/^# \{0,1\}//' >&2
+  sed -n '2,30p' "$0" | sed 's/^# \{0,1\}//' >&2
   exit 2
 }
 
@@ -61,7 +63,7 @@ build_type=release
 groups=""
 testers=""
 notes=""
-bump=false
+bump=auto
 build=true
 dry_run=false
 while [ $# -gt 0 ]; do
@@ -71,6 +73,7 @@ while [ $# -gt 0 ]; do
     --testers) testers=${2:?--testers needs a value}; shift ;;
     --notes) notes=${2:?--notes needs a value}; shift ;;
     --bump) bump=true ;;
+    --no-bump) bump=false ;;
     --no-build) build=false ;;
     --dry-run) dry_run=true ;;
     -*) usage ;;
@@ -88,6 +91,15 @@ if [ -f "$env_file" ]; then
 fi
 groups=${groups:-${FIREBASE_GROUPS:-}}
 
+# Every release testers get carries its own versionCode, so a phone tells the builds apart and installs the
+# newer one over the older.
+if [ "$bump" = auto ]; then
+  if $build && ! $dry_run; then bump=true; else bump=false; fi
+fi
+if $bump && ! $build; then
+  echo "--bump with --no-build would send an APK that does not carry the new versionCode" >&2
+  exit 2
+fi
 if $bump; then
   scripts/bump-version-code.sh "$app" "$flavor"
 fi
@@ -144,8 +156,16 @@ if [ -n "$credentials" ] && [ ! -f "$credentials" ] && [ -f "$REPO_ROOT/$credent
   credentials="$REPO_ROOT/$credentials"
 fi
 
+version=$(python3 - "$apk_dir/output-metadata.json" <<'PY' || true
+import json, sys
+element = json.load(open(sys.argv[1]))["elements"][0]
+print(f"{element.get('versionName', '?')} ({element.get('versionCode', '?')})")
+PY
+)
+
 cat <<EOF
 app         $app · $flavor · $build_type
+version     ${version:-unknown}
 apk         $apk ($(du -h "$apk" | cut -f1))
 signed by   $signer
 firebase    $app_id

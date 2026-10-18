@@ -108,7 +108,7 @@ Every capability has a fake in `firebase/testing`; each guide shows its own.
 Non-production builds to testers. Android goes through the Firebase CLI, iOS through fastlane:
 
 ```sh
-make distribute-android APP=customer FLAVOR=beta BUILD_TYPE=release TESTER_GROUPS=qa-team   # BUMP=1 DRY_RUN=1 NOTES="…"
+make distribute-android APP=customer FLAVOR=beta BUILD_TYPE=release TESTER_GROUPS=qa-team   # versionCode +1 by default; NO_BUMP=1 DRY_RUN=1 NOTES="…"
 scripts/distribute-firebase.sh ios beta
 ```
 
