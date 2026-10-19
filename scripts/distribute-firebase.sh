@@ -9,8 +9,10 @@
 #   --testers x@y,…  single testers (emails)
 #   --notes "text"   release notes; default "<flavor> <build type> · <short sha> (<branch>)"
 #   --no-bump        keep the versionCode: by default a build that is sent first raises the flavor's
-#                    versionCode by one (scripts/bump-version-code.sh, in the working tree; nothing is committed).
+#                    versionCode by one (scripts/bump-version-code.sh) and, once the build is sent, commits
+#                    the version file alone, so the number testers have is the number on record.
 #                    --no-build and --dry-run never bump: the APK sent is the one built before.
+#   --no-commit      raise the versionCode but leave it uncommitted in the working tree
 #   --no-build       send the APK of the last build instead of building one
 #   --dry-run        build and check, say what would be sent, send nothing
 # With neither groups nor testers the build is uploaded and distributed to nobody.
@@ -34,7 +36,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/app-properties.sh"
 cd "$REPO_ROOT"
 
 usage() {
-  sed -n '2,30p' "$0" | sed 's/^# \{0,1\}//' >&2
+  awk 'NR > 1 && /^#/ { sub(/^# ?/, ""); print; next } NR > 1 { exit }' "$0" >&2
   exit 2
 }
 
@@ -64,6 +66,7 @@ groups=""
 testers=""
 notes=""
 bump=auto
+commit=true
 build=true
 dry_run=false
 while [ $# -gt 0 ]; do
@@ -74,6 +77,7 @@ while [ $# -gt 0 ]; do
     --notes) notes=${2:?--notes needs a value}; shift ;;
     --bump) bump=true ;;
     --no-bump) bump=false ;;
+    --no-commit) commit=false ;;
     --no-build) build=false ;;
     --dry-run) dry_run=true ;;
     -*) usage ;;
@@ -191,4 +195,16 @@ if [ -n "$credentials" ]; then
   GOOGLE_APPLICATION_CREDENTIALS=$credentials "${cli[@]}" "${args[@]}"
 else
   "${cli[@]}" "${args[@]}"
+fi
+
+# Sent: the raised versionCode is now the one testers have, so it is recorded at once — and only the
+# version file, whatever else is staged. A commit refused (a commit-msg hook) leaves it in the tree.
+version_file="$APPS_DIR/$app/version.properties"
+if $bump && $commit && git ls-files --error-unmatch "$version_file" >/dev/null 2>&1; then
+  if git commit --quiet --only -m "chore(release): $app $flavor ${version:-} to Firebase App Distribution" \
+    -- "$version_file"; then
+    echo "committed $(git rev-parse --short HEAD): ${version_file#"$REPO_ROOT"/}"
+  else
+    echo "the raised versionCode is not committed: commit ${version_file#"$REPO_ROOT"/} yourself" >&2
+  fi
 fi
