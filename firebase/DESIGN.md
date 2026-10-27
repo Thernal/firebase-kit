@@ -4,10 +4,10 @@ Why the kit has the shape it has. It combines Act2Act's `core/firebase` (Compose
 bridges) with ArenaGo's `core/firebase` and `core/remoteconfig` (Android, the better-shaped APIs), with
 the choices recorded as epic decisions D56–D60.
 
-## Four capabilities, taken one by one
+## Capabilities, taken one by one
 
-Crash reporting, remote config, push and sign-in each have their own `api/impl/wiring` and their own
-Firebase SDK (D56). An app that only needs crash reports declares one `wiring` and links one SDK;
+Crash reporting, remote config, push and sign-in — and later the Realtime Database — each have their own
+`api/impl/wiring` and their own Firebase SDK (D56). An app that only needs crash reports declares one `wiring` and links one SDK;
 nothing else reaches its graph or its APK. Act2Act had all four in one module; ArenaGo had no sign-in —
 it is here because the owner chose to include it (D56).
 
@@ -60,6 +60,34 @@ scope.
 network-kit's). On Android the Google sheet (Credential Manager) and Apple's web flow need an activity;
 Act2Act's app created its bridge in `MainActivity` and handed it over. The kit instead tracks the resumed
 activity from app start with androidx.startup, so there is nothing to hand over.
+
+## The Realtime Database: JSON, and parts an app can leave out
+
+Added after the first four, when an app first used the database. The kit's earlier advice was to build
+another Firebase product beside the kit; the database came into it instead because nothing in it is one
+app's: an app's paths, types, timeouts and protocol stay in the app, and what is left — read, write and
+observe JSON at a path — is the same for any app on the database, iOS bridge included.
+
+**JSON, not the app's types.** The database is a JSON tree and the kit cannot know an app's models, so values
+are `JsonElement`s and a feature decodes them with its own serializers. The same type serves both
+platforms: Android converts it to the SDK's maps, lists and numbers; on iOS it crosses the bridge as text,
+so the Swift side needs no Kotlin types and `JSONSerialization` does the rest. `ServerValue` is the SDKs'
+`{".sv": …}` written as JSON, which both SDKs already read as a server value.
+
+**The SDK's semantics, not a policy.** A write completes when the server acknowledges it and waits while
+offline; the kit adds no timeout and no retry, because how long a screen may wait is the app's call. Every
+failure is one `DatabaseException`, with `isPermissionDenied` the one distinction apps branch on (security
+rules, which is also how a node deleted under a reader looks). Without a registered bridge or a Firebase
+configuration every call fails rather than doing nothing: a database that dropped writes and never
+answered reads would leave callers waiting.
+
+**Leaving it out costs nothing.** An app that took the kit before the database, or never uses it, must
+not have to change for it. So its Swift is a `files` part of its own, `ios/FirebaseDatabase`, registering
+through `FirebaseBridges.registerDatabase` from `FirebaseKit.configureDatabase()` — a fifth parameter of
+`register` or `configure` would have made every app's Xcode project need the FirebaseDatabase package on its
+next update. Its fake is in `firebase/database/testing`, not `firebase/testing`, which would otherwise
+depend on the database's api. Skipping `firebase/database` and `ios/FirebaseDatabase` removes the
+capability whole.
 
 ## Crash reporting and App Distribution
 

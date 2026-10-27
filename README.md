@@ -1,9 +1,9 @@
 # firebase-kit
 
-Firebase in a Compose Multiplatform app (android, iosArm64, iosSimulatorArm64), as four capabilities an
+Firebase in a Compose Multiplatform app (android, iosArm64, iosSimulatorArm64), as five capabilities an
 app takes one by one: **crash reporting** (Crashlytics), **remote config** with typed keys a feature owns,
-**push** (Cloud Messaging — token, topics, messages and taps), and **sign-in** with Google and Apple
-returning a Firebase ID token. Android uses the Firebase SDKs directly; iOS reaches the Firebase iOS SDK
+**push** (Cloud Messaging — token, topics, messages and taps), **sign-in** with Google and Apple
+returning a Firebase ID token, and the **Realtime Database** as JSON. Android uses the Firebase SDKs directly; iOS reaches the Firebase iOS SDK
 through Swift bridges the kit ships into the app's Xcode project. Firebase App Distribution lanes come
 with it.
 
@@ -31,7 +31,7 @@ when (val result = socialSignIn.signInWithGoogle()) {
 |---|---|
 | this file | what is here and how it is built |
 | [`firebase/README.md`](firebase/README.md) | setup (Gradle, Xcode, the bridges, the app delegate), App Distribution |
-| [`crash`](firebase/crash/api/README.md), [`config`](firebase/config/api/README.md), [`messaging`](firebase/messaging/api/README.md), [`auth`](firebase/auth/api/README.md) `api/README.md` | each capability, task by task |
+| [`crash`](firebase/crash/api/README.md), [`config`](firebase/config/api/README.md), [`messaging`](firebase/messaging/api/README.md), [`auth`](firebase/auth/api/README.md), [`database`](firebase/database/api/README.md) `api/README.md` | each capability, task by task |
 | [`firebase/DESIGN.md`](firebase/DESIGN.md) | why each part has its shape, and what changed from the apps it came from |
 | [`skills/firebase-kit`](skills/firebase-kit/SKILL.md) | the same for an agent working in an app that uses the kit |
 
@@ -86,12 +86,14 @@ The same by hand, from a clone of this repository.
 | `firebase/config/{api,impl,wiring}` | `RemoteConfigKey<T>`, `ConfigKey`, `RemoteConfig`, `RemoteConfigSource`; `RemoteConfigImpl`, `StaticRemoteConfigSource`, the Firebase source | Remote Config (Android) |
 | `firebase/messaging/{api,impl,wiring}` | `PushMessage`, `PushMessaging`, `PushMessageStream`; the Android messaging service, notification and `PushIntents` | Messaging, core, lifecycle-process (Android) |
 | `firebase/auth/{api,impl,wiring}` | `SocialSignIn`, `SignInResult`; Credential Manager (Google) and Firebase's Apple flow | Auth, Credential Manager, Google ID, startup (Android) |
+| `firebase/database/{api,impl,wiring,testing}` | `RealtimeDatabase`, `ServerValue`, `DatabaseException`; the Firebase database; `FakeRealtimeDatabase` | Database (Android), kotlinx-serialization-json |
 | `firebase/bridge` | the interfaces the Swift implements, `FirebaseBridges`, `PushHub` — exported into the iOS framework | messaging/api |
 | `firebase/testing` | `FakeCrashReporter`, `testRemoteConfig()`, `FakePushMessaging`, `FakePushMessageStream`, `FakeSocialSignIn` | the apis |
 | `ios/Firebase` | `FirebaseKit.swift` and one bridge per capability | Firebase iOS SDK, GoogleSignIn (SPM) |
+| `ios/FirebaseDatabase` | the Realtime Database's bridge and `FirebaseKit.configureDatabase()` — its own part, so an app without the database leaves it out | FirebaseDatabase (SPM) |
 | `fastlane/FirebaseFastfile`, `scripts/distribute-firebase.sh`, `fastlane/.env.firebase.example` | App Distribution — Android through the Firebase CLI, iOS through the lanes — and their environment | the Firebase CLI (or `npx`), fastlane, build-kit's `make` and scripts |
 | `config/firebase` | example `google-services.json` and `GoogleService-Info.plist`, and what the kit reads from them | — |
-| `sample/{shared,android,ios}` | one screen using all four | the kit — never copied |
+| `sample/{shared,android,ios}` | one screen using all five | the kit — never copied |
 
 ## Building
 

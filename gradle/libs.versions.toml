@@ -32,8 +32,9 @@ google-identity-googleid = "1.2.0"
 androidx-startup = "1.2.0"
 androidx-lifecycle = "2.11.0"
 
-# KotlinX
+# KotlinX — serialization for the Realtime Database's JSON values only.
 kotlinx-coroutines = "1.11.0"
+kotlinx-serialization = "1.11.0"
 
 # Dependency injection — Metro, for the wiring module and the sample's graph.
 metro = "1.4.2"
@@ -67,6 +68,7 @@ firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-config = { module = "com.google.firebase:firebase-config" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
+firebase-database = { module = "com.google.firebase:firebase-database" }
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinx-coroutines" }
 
 # Lifecycle
@@ -83,6 +85,7 @@ androidx-startup = { module = "androidx.startup:startup-runtime", version.ref = 
 # KotlinX
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 # Dependency injection
 metro-runtime = { module = "dev.zacsweers.metro:runtime", version.ref = "metro" }

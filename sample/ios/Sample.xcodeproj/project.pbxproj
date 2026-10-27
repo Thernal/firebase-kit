@@ -11,9 +11,11 @@
 		13A1346B068E3F641260211B /* AuthBridgeImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBEEE6A0C966D1C04B76FD9 /* AuthBridgeImpl.swift */; };
 		1A9FFC51E9A1C4177E9994FE /* FirebaseKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39915B3C2EEFB360DEAF5FE /* FirebaseKit.swift */; };
 		538E149657142A68228382B4 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 7B84B4DA533254391412CAAE /* FirebaseAuth */; };
+		7D7807565F0592819B90CCD0 /* DatabaseBridgeImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB24493B28B0D0E03EB7BF63 /* DatabaseBridgeImpl.swift */; };
+		836C444ACA50FD2F4DFBB939 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = BE510B908199BCF8B0EC3E2E /* GoogleSignIn */; };
 		868F2AF94B93602732FB89F6 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 34C3DB9DFE99E1B0FEE702FA /* FirebaseCrashlytics */; };
 		A5A295A0D383112D0A9E1027 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 6154BD34BAFEC195261F015F /* FirebaseMessaging */; };
-		A69FFFDA06B413940073353F /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = BE510B908199BCF8B0EC3E2E /* GoogleSignIn */; };
+		A69FFFDA06B413940073353F /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = E54A7E0884E550EFF57350C3 /* FirebaseDatabase */; };
 		B40B742C7FEE2C5738698CB8 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = AF59A115BFAF94474FBB602A /* FirebaseRemoteConfig */; };
 		B8B072CC1317B88A6D02AA66 /* MessagingBridgeImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D04A829EF2DFD6AF101B4422 /* MessagingBridgeImpl.swift */; };
 		E3642D0289460A0852A06F36 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8CE0B3F2C823B4D0AA4DED69 /* FirebaseCore */; };
@@ -29,6 +31,7 @@
 		A0AF67D01ECDC9E448738849 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D04A829EF2DFD6AF101B4422 /* MessagingBridgeImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingBridgeImpl.swift; sourceTree = "<group>"; };
 		DAF345011CB44AA204A0F9D7 /* SampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleApp.swift; sourceTree = "<group>"; };
+		DB24493B28B0D0E03EB7BF63 /* DatabaseBridgeImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseBridgeImpl.swift; sourceTree = "<group>"; };
 		F39915B3C2EEFB360DEAF5FE /* FirebaseKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseKit.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -42,7 +45,8 @@
 				B40B742C7FEE2C5738698CB8 /* FirebaseRemoteConfig in Frameworks */,
 				A5A295A0D383112D0A9E1027 /* FirebaseMessaging in Frameworks */,
 				538E149657142A68228382B4 /* FirebaseAuth in Frameworks */,
-				A69FFFDA06B413940073353F /* GoogleSignIn in Frameworks */,
+				A69FFFDA06B413940073353F /* FirebaseDatabase in Frameworks */,
+				836C444ACA50FD2F4DFBB939 /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,10 +70,19 @@
 			path = Sample;
 			sourceTree = "<group>";
 		};
+		423C87B87A95936D0E0201DA /* FirebaseDatabase */ = {
+			isa = PBXGroup;
+			children = (
+				6B9C629483C10A2C266930FF /* FirebaseDatabase */,
+			);
+			name = FirebaseDatabase;
+			sourceTree = "<group>";
+		};
 		601AED86D96D6E174258727D = {
 			isa = PBXGroup;
 			children = (
 				26380F6FE5A62BAFE51D16D5 /* Firebase */,
+				423C87B87A95936D0E0201DA /* FirebaseDatabase */,
 				27B58C6CA3AE271867F02D4E /* Sample */,
 				A4E580F29E693A6B692DDF40 /* Products */,
 			);
@@ -86,6 +99,15 @@
 			);
 			name = Firebase;
 			path = ../../ios/Firebase;
+			sourceTree = "<group>";
+		};
+		6B9C629483C10A2C266930FF /* FirebaseDatabase */ = {
+			isa = PBXGroup;
+			children = (
+				DB24493B28B0D0E03EB7BF63 /* DatabaseBridgeImpl.swift */,
+			);
+			name = FirebaseDatabase;
+			path = ../../ios/FirebaseDatabase;
 			sourceTree = "<group>";
 		};
 		A4E580F29E693A6B692DDF40 /* Products */ = {
@@ -119,6 +141,7 @@
 				AF59A115BFAF94474FBB602A /* FirebaseRemoteConfig */,
 				6154BD34BAFEC195261F015F /* FirebaseMessaging */,
 				7B84B4DA533254391412CAAE /* FirebaseAuth */,
+				E54A7E0884E550EFF57350C3 /* FirebaseDatabase */,
 				BE510B908199BCF8B0EC3E2E /* GoogleSignIn */,
 			);
 			productName = Sample;
@@ -210,6 +233,7 @@
 			files = (
 				13A1346B068E3F641260211B /* AuthBridgeImpl.swift in Sources */,
 				FA570F942955B6884E557953 /* CrashlyticsBridgeImpl.swift in Sources */,
+				7D7807565F0592819B90CCD0 /* DatabaseBridgeImpl.swift in Sources */,
 				1A9FFC51E9A1C4177E9994FE /* FirebaseKit.swift in Sources */,
 				B8B072CC1317B88A6D02AA66 /* MessagingBridgeImpl.swift in Sources */,
 				087AD085714F72C8668CB87E /* RemoteConfigBridgeImpl.swift in Sources */,
@@ -453,6 +477,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 96C68690D17C9C6D315B9A63 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignIn;
+		};
+		E54A7E0884E550EFF57350C3 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FE4FB3444B239C47F636149D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

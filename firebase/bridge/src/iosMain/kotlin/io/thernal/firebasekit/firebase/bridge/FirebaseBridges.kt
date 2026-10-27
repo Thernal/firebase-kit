@@ -11,7 +11,10 @@ package io.thernal.firebasekit.firebase.bridge
  *                                 messaging: MessagingBridgeImpl.shared, auth: AuthBridgeImpl())
  * ```
  *
- * A bridge left out (`nil`) turns its capability into a no-op on iOS.
+ * A bridge left out (`nil`) turns its capability into a no-op on iOS. The Realtime Database registers on its
+ * own ([registerDatabase], from `FirebaseKit.configureDatabase()` in `ios/FirebaseDatabase`), so an app that
+ * does not use it needs neither the Swift file nor the FirebaseDatabase package; unregistered, every read and
+ * write fails.
  */
 object FirebaseBridges {
     var crashlytics: CrashlyticsBridge? = null
@@ -21,6 +24,8 @@ object FirebaseBridges {
     var messaging: MessagingBridge? = null
         private set
     var auth: AuthBridge? = null
+        private set
+    var database: DatabaseBridge? = null
         private set
 
     fun register(
@@ -33,5 +38,9 @@ object FirebaseBridges {
         this.remoteConfig = remoteConfig
         this.messaging = messaging
         this.auth = auth
+    }
+
+    fun registerDatabase(database: DatabaseBridge?) {
+        this.database = database
     }
 }

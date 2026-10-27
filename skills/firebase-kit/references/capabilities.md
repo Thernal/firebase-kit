@@ -48,7 +48,28 @@ when (val result = socialSignIn.signInWithGoogle()) {
 
 Sign-out: `socialSignIn.signOut()` and the app's own session.
 
+## Realtime Database
+
+```kotlin
+class ProfileRemoteDataSourceImpl(private val database: RealtimeDatabase) : ProfileRemoteDataSource {
+    override suspend fun save(userId: String, profile: ProfileDto) {
+        database.set(path = "users/$userId/profile", value = Json.encodeToJsonElement(profile))
+    }
+
+    override fun profile(userId: String): Flow<ProfileDto?> {
+        return database.observe("users/$userId/profile").map { it?.let(Json::decodeFromJsonElement) }
+    }
+}
+```
+
+`update(path, mapOf("a/b" to …, "c" to JsonNull))` writes several children atomically; `ServerValue.Timestamp`
+and `ServerValue.increment(n)` resolve on the server; `newKey()` names a new child. Catch `DatabaseException`
+— `isPermissionDenied` is a rules refusal, including a node deleted under the reader. Writes wait offline:
+`withTimeoutOrNull` where a screen waits. Queries, transactions and `onDisconnect` are not in the kit
+(`docs/todos/database-queries.md`).
+
 ## Tests
 
 `FakeCrashReporter` (records), `testRemoteConfig(...)`, `FakePushMessaging(initialToken)` (`newToken`,
-`topics`), `FakePushMessageStream` (`receive`, `open`), `FakeSocialSignIn(answer)` (`attempts`, `signOuts`).
+`topics`), `FakePushMessageStream` (`receive`, `open`), `FakeSocialSignIn(answer)` (`attempts`, `signOuts`);
+`FakeRealtimeDatabase(now)` (`deny`, `allow`; an in-memory tree) in `firebase/database/testing`.

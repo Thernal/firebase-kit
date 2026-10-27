@@ -31,6 +31,7 @@ never reaches the graph.
 | remote config | `firebase/config/{api,wiring}` |
 | push | `firebase/messaging/{api,wiring}`, and `messaging/impl` in the Android app (for `PushIntents`) |
 | sign-in | `firebase/auth/{api,wiring}` |
+| the Realtime Database | `firebase/database/{api,wiring}`, `firebase/database/testing` in tests, and `kotlinx-serialization-json` where values are encoded |
 | any, on iOS | `firebase/bridge`, **exported** into the framework (below) |
 
 ### iOS framework
@@ -49,10 +50,14 @@ With build-kit, `api(...)` is refused unless listed: add the module to `app.api.
 ### Xcode (iOS)
 
 1. Add the Swift packages `https://github.com/firebase/firebase-ios-sdk` (products FirebaseCore,
-   FirebaseCrashlytics, FirebaseRemoteConfig, FirebaseMessaging, FirebaseAuth — those the app uses) and
-   `https://github.com/google/GoogleSignIn-iOS` (for Google sign-in).
+   FirebaseCrashlytics, FirebaseRemoteConfig, FirebaseMessaging, FirebaseAuth, FirebaseDatabase — those the
+   app uses) and `https://github.com/google/GoogleSignIn-iOS` (for Google sign-in).
 2. The kit install placed `FirebaseKit.swift` and the bridges in the folder `--place` named; add that folder
    to the app target. Delete a bridge the app does not use and pass `false` for it in `configure`.
+   The Realtime Database's bridge is a part of its own, `ios/FirebaseDatabase`: an app that uses the database
+   places it too (`--place ios/FirebaseDatabase=<Xcode folder>/FirebaseDatabase`), adds it to the target
+   and calls `FirebaseKit.configureDatabase()` after `configure`; one that does not skips it
+   (`--skip ios/FirebaseDatabase`) and needs no FirebaseDatabase package.
 3. Add `GoogleService-Info.plist` per flavor (copied into the bundle by a build phase per configuration);
    `config/firebase/GoogleService-Info.example.plist` shows its shape.
 4. Capabilities: Push Notifications, Background Modes → Remote notifications, Sign in with Apple.
@@ -66,6 +71,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         FirebaseKit.configure(application: application, launchOptions: launchOptions)
+        FirebaseKit.configureDatabase()   // only with ios/FirebaseDatabase
         return true
     }
 
@@ -98,10 +104,12 @@ Each capability's usage is in its `api` module:
 | Remote config | [`config/api/README.md`](config/api/README.md) |
 | Push | [`messaging/api/README.md`](messaging/api/README.md) |
 | Sign-in | [`auth/api/README.md`](auth/api/README.md) |
+| Realtime Database | [`database/api/README.md`](database/api/README.md) |
 
 ## Tests
 
-Every capability has a fake in `firebase/testing`; each guide shows its own.
+Every capability has a fake — in `firebase/testing`, the Realtime Database's in `firebase/database/testing` so
+it leaves with the capability; each guide shows its own.
 
 ## App Distribution
 
