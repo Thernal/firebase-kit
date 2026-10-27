@@ -28,7 +28,9 @@ import androidx.compose.ui.unit.dp
 import dev.zacsweers.metro.createGraph
 import io.thernal.firebasekit.firebase.auth.api.data.SignInResult
 import io.thernal.firebasekit.firebase.config.api.domain.ConfigKey
+import io.thernal.firebasekit.firebase.database.api.data.ServerValue
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 private val MAINTENANCE = ConfigKey(key = "is_in_maintenance", default = false)
@@ -48,6 +50,7 @@ private fun SampleScreen(graph: SampleGraph) {
     val scope = rememberCoroutineScope()
     val events = remember { mutableStateListOf<String>() }
     var token by remember { mutableStateOf("—") }
+    var written by remember { mutableStateOf("—") }
     val greeting by graph.remoteConfig.observe(
         SampleFlags.GREETING,
     ).collectAsState(initial = SampleFlags.GREETING.default)
@@ -69,6 +72,11 @@ private fun SampleScreen(graph: SampleGraph) {
             }
         }
         launch { graph.pushMessaging.tokens.collect { token = it } }
+        launch {
+            graph.database.observe(SAMPLE_PATH)
+                .catch { failure -> written = "observe failed: ${failure.message.orEmpty()}" }
+                .collect { value -> written = value?.toString() ?: "—" }
+        }
     }
     Column(
         modifier = Modifier.safeDrawingPadding().padding(16.dp).verticalScroll(rememberScrollState()),
@@ -135,6 +143,23 @@ private fun SampleScreen(graph: SampleGraph) {
                 OutlinedButton(onClick = { scope.launch { graph.signIn.signOut() } }) { Text(text = "Sign out") }
             }
         }
+        Section(title = "Realtime Database") {
+            Text(text = "$SAMPLE_PATH: $written")
+            OutlinedButton(
+                onClick = {
+                    scope.launch {
+                        events.add(
+                            index = 0,
+                            element = attempt(label = "write") {
+                                graph.database.set(path = SAMPLE_PATH, value = ServerValue.Timestamp)
+                            },
+                        )
+                    }
+                },
+            ) {
+                Text(text = "Write the server time")
+            }
+        }
         Section(title = "Crash reporting") {
             OutlinedButton(
                 onClick = {
@@ -188,3 +213,6 @@ private fun SignInResult.describe(provider: String): String {
 }
 
 private const val TOKEN_PREVIEW = 12
+
+// The rules have to let the signed-in user write here (config/firebase/README.md).
+private const val SAMPLE_PATH = "sample/written"

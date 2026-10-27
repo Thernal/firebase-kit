@@ -22,6 +22,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     ) -> Bool {
         if Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist") != nil {
             FirebaseKit.configure(application: application, launchOptions: launchOptions)
+            FirebaseKit.configureDatabase()
         }
         return true
     }

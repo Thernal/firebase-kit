@@ -25,6 +25,9 @@ kotlin {
                 implementation(projects.firebase.messaging.wiring)
                 implementation(projects.firebase.auth.api)
                 implementation(projects.firebase.auth.wiring)
+                implementation(projects.firebase.database.api)
+                implementation(projects.firebase.database.wiring)
+                implementation(libs.kotlinx.serialization.json)
                 implementation(libs.compose.material3)
                 implementation(libs.kotlinx.coroutines.core)
             }

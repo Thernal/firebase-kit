@@ -2,9 +2,27 @@
 
 firebase-kit is a **kit**: reusable Compose Multiplatform code that applications copy — renamed into their own
 package — with `skillctl.sh kit install firebase-kit` (the skill-manager skill, `Thernal/knowledge`), and later
-merge changes from with `kit update`. What they copy is listed in `kit.yml`: the modules `firebase/bridge`, `firebase/crash/api`, `firebase/crash/impl`, `firebase/crash/wiring` … and files placed outside Gradle modules (`ios/Firebase`, `scripts/distribute-firebase.sh`, `fastlane/FirebaseFastfile`).
+merge changes from with `kit update`. What they copy is listed in `kit.yml`: the modules `firebase/bridge`, `firebase/crash/api`, `firebase/crash/impl`, `firebase/crash/wiring` … and files placed outside Gradle modules (`ios/Firebase`, `ios/FirebaseDatabase`, `scripts/distribute-firebase.sh`, `fastlane/FirebaseFastfile`).
 Everything committed to `main` reaches every app that takes the next update, so this file's first rule is
 about delivery.
+
+## What belongs in the kit
+
+The kit changes for a reason that holds for every app on it, never to fit one app.
+
+- **An app's need is a question, not a spec.** When an app needs something the kit lacks, the kit gets its
+  general form — the Firebase product's own operations and semantics — and the app keeps its paths, types,
+  timeouts, retries, wording and protocol. A test, an example or a KDoc here uses no app's vocabulary.
+- **An addition does not reach an app that does not use it.** A new capability is its own modules and, on iOS,
+  its own `files` part registered on its own (as `ios/FirebaseDatabase` and `FirebaseKit.configureDatabase()`):
+  an app that updates without taking it compiles as before, and `--skip <path>` removes it whole. A new
+  parameter of `FirebaseBridges.register` or `FirebaseKit.configure`, or a new dependency of `firebase/testing`,
+  is not that.
+- **A change to existing behaviour needs a reason every app shares**; if it changes what apps use, it is `!`
+  with a `Migration:` paragraph (below). One app's workaround stays in that app.
+- **When in doubt, it stays in the app.** It moves here when a second app needs the same thing or the owner
+  decides it is general — and the kit's card (`kits/firebase-kit.md` in `Thernal/knowledge`: `applies_when`,
+  `not_for`) changes in the same delivery.
 
 ## Delivering a change
 

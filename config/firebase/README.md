@@ -16,7 +16,10 @@ What the kit reads from them:
 - `CLIENT_ID` and `REVERSED_CLIENT_ID` (iOS) — Google Sign-In; the reversed id is also the app's URL
   scheme.
 - `GCM_SENDER_ID`, `IS_GCM_ENABLED` — push.
+- `firebase_url` (Android, `project_info`) and `DATABASE_URL` (iOS) — the Realtime Database's address. A file
+  downloaded before the database was created lacks it: download it again.
 
 To try the sample against a project: copy a real file to `sample/android/google-services.json` (package
 `io.thernal.firebasekit.sample.android`) and `sample/ios/Sample/GoogleService-Info.plist` (bundle
-`io.thernal.firebasekit.sample`); the sample configures Firebase only when they are present.
+`io.thernal.firebasekit.sample`); the sample configures Firebase only when they are present. Its Realtime
+Database section writes `sample/written`, so the project's rules have to let a signed-in user write there.

@@ -1,6 +1,7 @@
 # The iOS sample. `xcodegen generate` (in this directory) rebuilds Sample.xcodeproj from this file;
 # the generated project is committed so opening the sample needs Xcode only. It compiles the kit's
-# own Swift bridges (../../ios/Firebase) — the check that they match the Kotlin framework.
+# own Swift bridges (../../ios/Firebase, ../../ios/FirebaseDatabase) — the check that they match the Kotlin
+# framework.
 name: Sample
 options:
   bundleIdPrefix: io.thernal.firebasekit
@@ -25,6 +26,8 @@ targets:
       - Sample
       - path: ../../ios/Firebase
         group: Firebase
+      - path: ../../ios/FirebaseDatabase
+        group: FirebaseDatabase
     dependencies:
       - package: Firebase
         product: FirebaseCore
@@ -36,6 +39,8 @@ targets:
         product: FirebaseMessaging
       - package: Firebase
         product: FirebaseAuth
+      - package: Firebase
+        product: FirebaseDatabase
       - package: GoogleSignIn
         product: GoogleSignIn
     info:
