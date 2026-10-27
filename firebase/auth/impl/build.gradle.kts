@@ -1,8 +1,15 @@
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+
 plugins {
     alias(libs.plugins.firebasekit.kmp.library)
 }
 
 kotlin {
+    // res/raw keeps default_web_client_id through an app's resource shrinking.
+    targets.withType<KotlinMultiplatformAndroidLibraryTarget>().configureEach {
+        androidResources.enable = true
+    }
+
     sourceSets {
         commonMain {
             dependencies {

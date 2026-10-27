@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AndroidSocialSignIn looks default_web_client_id up by name, which resource shrinking cannot see:
+     without this a release build drops the string and Google sign-in fails before its sheet opens. -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@string/default_web_client_id" />
