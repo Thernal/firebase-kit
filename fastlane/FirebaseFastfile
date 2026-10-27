@@ -65,7 +65,8 @@ platform :android do
   lane :firebase do |options|
     app = options[:app] || UI.user_error!("Pass app:<name>")
     flavor = firebase_flavor(options)
-    sh("cd #{FIREBASE_ROOT} && make build-android APP=#{app} FLAVOR=#{flavor} BUILD_TYPE=release")
+    # Always an APK: make builds the store bundle (AAB) for a production release by default.
+    sh("cd #{FIREBASE_ROOT} && make build-android APP=#{app} FLAVOR=#{flavor} BUILD_TYPE=release ANDROID_ARTIFACT_TYPE=apk")
     apk = Dir[File.join(FIREBASE_ARTIFACTS, "android", "#{app}-#{flavor}-release*.apk")].max_by { |f| File.mtime(f) }
     firebase_release(options, app_id: firebase_app_id("android", app, flavor), file: apk)
   end
