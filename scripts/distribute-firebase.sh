@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Sends a non-production build to Firebase App Distribution (firebase-kit).
+# Sends a build to Firebase App Distribution (firebase-kit): a non-production flavor, or production too in an
+# app that never goes to a store (firebase.distribution.production=true in gradle.properties).
 #
 #   scripts/distribute-firebase.sh android <app> <flavor> [debug|release] [options]
 #   scripts/distribute-firebase.sh ios <flavor> [groups]
@@ -20,7 +21,8 @@
 # From make:  make distribute-android APP=customer FLAVOR=beta BUILD_TYPE=release TESTER_GROUPS=qa
 #
 # Signing: a non-production variant is signed with the team's shared debug keystore, else AGP's debug key
-# (build-logic/…/Signing.kt), so the APK installs; this script refuses an unsigned one.
+# (build-logic/…/Signing.kt), so the APK installs; a production release needs the release keystore. This
+# script refuses an unsigned APK.
 #
 # Firebase app id: FIREBASE_APP_ID_ANDROID_<APP>_<FLAVOR> if set, else read from the flavor's
 # google-services.json by the build's applicationId. Credentials: GOOGLE_APPLICATION_CREDENTIALS (a service
@@ -56,8 +58,10 @@ flavor=${2:-}
 shift 2 || usage
 require_app "$app"
 require_flavor "$flavor"
-if [ "$flavor" = "$PRODUCTION_FLAVOR" ]; then
+# Production goes to the stores, unless the app has none: a personal or in-house app opts in.
+if [ "$flavor" = "$PRODUCTION_FLAVOR" ] && [ "$(app_property firebase.distribution.production)" != true ]; then
   echo "$flavor is the production flavor: it goes to the stores, not to testers" >&2
+  echo "(an app that never goes to a store sets firebase.distribution.production=true in gradle.properties)" >&2
   exit 2
 fi
 

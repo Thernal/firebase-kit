@@ -118,4 +118,5 @@ from the flavor's `google-services.json` and sends it with `firebase appdistribu
 `GOOGLE_APPLICATION_CREDENTIALS`). For iOS the app's Fastfile adds `import "FirebaseFastfile"`, its Pluginfile
 `gem "fastlane-plugin-firebase_app_distribution"`. `fastlane/.env.firebase.example` lists the environment; copy it
 to `fastlane/.env.firebase` (keep it out of git), or set it in CI. The production flavor is refused: it goes to the
-stores.
+stores. An app that never goes to one (personal or in-house) sets `firebase.distribution.production=true` in
+`gradle.properties`, and its production flavor is sent like any other — a release build needs the release keystore.
