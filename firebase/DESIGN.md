@@ -66,7 +66,9 @@ activity from app start with androidx.startup, so there is nothing to hand over.
 `CrashReporter` is the same five calls in both apps (D60). Every flavor reports, told apart by a custom key
 the app sets. App Distribution came from build-kit (D27): its lanes live in `fastlane/FirebaseFastfile`,
 imported by build-kit's Fastfile, reading the same flavor and app lists, and building through the same
-`make` targets.
+`make` targets. Production is refused because it normally goes to a store; an app with no store (a personal
+tool) opts in with `firebase.distribution.production=true` — a key of this kit's own, not build-kit's `app.*`,
+read by both the script and the lanes, so the default stays the safe one.
 
 ## What changed from the sources
 

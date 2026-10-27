@@ -27,5 +27,7 @@ and sent to nobody. A non-production variant is signed with the shared debug key
 - Environment: `GOOGLE_APPLICATION_CREDENTIALS`, `FIREBASE_APP_ID_ANDROID_<APP>_<FLAVOR>` (optional on Android),
   `FIREBASE_APP_ID_IOS_<FLAVOR>`, optional `FIREBASE_GROUPS` (the default for `--groups`); for iOS also
   `IOS_BUNDLE_ID_<FLAVOR>`, `APP_STORE_CONNECT_API_KEY_PATH`, match. They can sit in `fastlane/.env.firebase` (git-ignored).
-- The production flavor is refused — stores only.
+- The production flavor is refused — stores only — unless `gradle.properties` has
+  `firebase.distribution.production=true`, for an app that never goes to a store (personal, in-house). A production
+  release is signed with the release keystore; without one the APK is unsigned and refused.
 - A group must exist in the console before it can be addressed (App Distribution → Testers & Groups).

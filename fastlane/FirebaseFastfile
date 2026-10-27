@@ -4,7 +4,8 @@
 #
 # and its Pluginfile adds `gem "fastlane-plugin-firebase_app_distribution"`. Building stays `make`'s
 # job; a lane builds through it and uploads. Flavors and apps come from gradle.properties, as for the
-# build. Distributing the production flavor is refused — it goes to the stores.
+# build. Distributing the production flavor is refused — it goes to the stores — unless gradle.properties
+# has firebase.distribution.production=true (an app that never goes to a store).
 #
 #   bundle exec fastlane android firebase app:customer flavor:beta [groups:qa] [notes:"…"]
 #   bundle exec fastlane ios firebase flavor:beta [groups:qa]
@@ -29,12 +30,16 @@ end
 
 FIREBASE_FLAVORS = firebase_property("app.flavors").to_s.split(",").map(&:strip)
 FIREBASE_PRODUCTION = firebase_property("app.flavors.production") || FIREBASE_FLAVORS.last
+FIREBASE_PRODUCTION_ALLOWED = firebase_property("firebase.distribution.production") == "true"
 FIREBASE_ARTIFACTS = File.join(FIREBASE_ROOT, ".misc/artifacts")
 
 def firebase_flavor(options)
   flavor = options[:flavor] || UI.user_error!("Pass flavor:<#{FIREBASE_FLAVORS.join('|')}>")
   UI.user_error!("Unknown flavor '#{flavor}'. Expected one of: #{FIREBASE_FLAVORS.join(', ')}") unless FIREBASE_FLAVORS.include?(flavor)
-  UI.user_error!("#{flavor} is the production flavor: it goes to the stores, not to testers") if flavor == FIREBASE_PRODUCTION
+  if flavor == FIREBASE_PRODUCTION && !FIREBASE_PRODUCTION_ALLOWED
+    UI.user_error!("#{flavor} is the production flavor: it goes to the stores, not to testers " \
+                   "(an app that never goes to a store sets firebase.distribution.production=true in gradle.properties)")
+  end
   flavor
 end
 
