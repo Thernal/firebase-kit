@@ -111,8 +111,10 @@ fi
 if $bump; then
   scripts/bump-version-code.sh "$app" "$flavor"
 fi
+# Always an APK: build-kit's make builds the store bundle (AAB) for a production release by default, which
+# testers cannot install.
 if $build; then
-  make --no-print-directory build-android APP="$app" FLAVOR="$flavor" BUILD_TYPE="$build_type"
+  make --no-print-directory build-android APP="$app" FLAVOR="$flavor" BUILD_TYPE="$build_type" ANDROID_ARTIFACT_TYPE=apk
 fi
 
 apk_dir="$APPS_DIR/$app/android/build/outputs/apk/$flavor/$build_type"
