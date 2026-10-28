@@ -50,6 +50,12 @@ by Firebase's own manifest keys so the two kinds look alike; the tap carries the
 launcher, where `PushIntents` turns either kind into an `opened` message. ArenaGo posted from the service
 in every case and routed taps as intent data; the kit keeps that, adding the foreground choice.
 
+Some notifications are the app's own — actions whose receivers are the app's, a channel the app names, a
+notification removed by a later message. The service is the system's, so the app cannot reach it through the
+graph either: it installs a `PushRenderer` in a static field, set in `Application.onCreate`, which every process
+a message wakes runs before the service. A renderer named in the manifest and created by reflection would need
+keep rules in every app; a field set in code needs none.
+
 D59 planned a `PushTokenRegistrar` the kit would call; a kit has no app-startup hook to call it from, so it
 became `PushMessaging.tokens` — the current token and every new one, for the app to collect in its own
 scope.

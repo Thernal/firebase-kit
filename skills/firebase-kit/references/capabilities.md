@@ -32,6 +32,7 @@ appScope.launch { pushMessaging.tokens.collect(api::registerPushToken) }
 pushMessaging.subscribe("news")
 LaunchedEffect(Unit) { pushMessageStream.opened.collect { it.deepLink?.let(deepLinks::open) } }   // root only
 pushMessageStream.messages.collect { showInAppBanner(it) }   // foreground
+PushRenderer.installed = PushRenderer { context, message -> … }   // Android, Application.onCreate: draw some yourself
 ```
 
 The destination travels in the `deepLink` data key of the message the backend sends.

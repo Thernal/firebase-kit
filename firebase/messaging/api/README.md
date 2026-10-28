@@ -47,6 +47,30 @@ and configure the notifications with Firebase's own manifest keys, which the kit
 Create the channel at startup with a translated name; otherwise the kit creates it named "Notifications".
 The app asks for `POST_NOTIFICATIONS` itself (permissions-kit: `AppPermission.Notification`).
 
+### Drawing a notification yourself (Android)
+
+A message that needs more than a title and a text — action buttons, a channel of its own, a notification to
+remove — is drawn by the app. Install a `PushRenderer` in `Application.onCreate`; the service asks it first for
+every message, in the foreground and the background, and posts the messages it returns `false` for as before:
+
+```kotlin
+class App : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        PushRenderer.installed = PushRenderer { context, message ->
+            when (message.data["type"]) {
+                "invite" -> invites.post(context, message)      // Accept / Decline actions; returns true
+                "revoked" -> invites.remove(context, message)   // removes the invite's notification; true
+                else -> false
+            }
+        }
+    }
+}
+```
+
+`render` runs on the service's worker thread and must post before it returns; work that takes longer (a
+network call) goes to a `WorkManager` job or `goAsync()` in the action's receiver.
+
 ## Tests
 
 `firebase/testing` has the fake:
