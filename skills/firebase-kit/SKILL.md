@@ -1,6 +1,6 @@
 ---
 name: firebase-kit
-description: Writes, reviews and debugs Firebase code in Compose Multiplatform apps that use firebase-kit (packages io.thernal.firebasekit.firebase.*; CrashReporter, RemoteConfig, RemoteConfigKey, ConfigKey, RemoteConfigSource, StaticRemoteConfigSource, PushMessaging, PushMessageStream, PushMessage, PushIntents, SocialSignIn, SignInResult, RealtimeDatabase, ServerValue, FakeRealtimeDatabase, FirebaseBridges, PushHub, FirebaseKit.configure). Use it for any Firebase work in such a project, even when the kit is not named - crash reports and non-fatals, feature flags and remote config, push notifications, the push token and backend registration, notification taps and deep links, Google or Apple sign-in, Realtime Database reads, writes and listeners, Firebase setup on iOS (Swift bridges, app delegate, SPM) or Android (google-services), and Firebase App Distribution. Not for projects without firebase-kit.
+description: Writes, reviews and debugs Firebase code in Compose Multiplatform apps that use firebase-kit (packages io.thernal.firebasekit.firebase.*; CrashReporter, RemoteConfig, RemoteConfigKey, ConfigKey, RemoteConfigSource, StaticRemoteConfigSource, PushMessaging, PushMessageStream, PushMessage, PushIntents, PushRenderer, SocialSignIn, SignInResult, RealtimeDatabase, ServerValue, FakeRealtimeDatabase, FirebaseBridges, PushHub, FirebaseKit.configure). Use it for any Firebase work in such a project, even when the kit is not named - crash reports and non-fatals, feature flags and remote config, push notifications, the push token and backend registration, notification taps and deep links, Google or Apple sign-in, Realtime Database reads, writes and listeners, Firebase setup on iOS (Swift bridges, app delegate, SPM) or Android (google-services), and Firebase App Distribution. Not for projects without firebase-kit.
 ---
 
 # firebase-kit
@@ -30,7 +30,8 @@ rather than hand edits — it merges the Swift files as well.
 - Five capabilities, each wired by its own container: `CrashReporter`, `RemoteConfig`,
   `PushMessaging` + `PushMessageStream`, `SocialSignIn`, `RealtimeDatabase`. Features inject the `api` types.
 - Flags are a feature's own enum implementing `RemoteConfigKey<T>`; `get`, `observe`, `fetchAndActivate`.
-- Push: collect `tokens` for the backend; `messages` in the foreground; `opened` (taps) once at the root.
+- Push: collect `tokens` for the backend; `messages` in the foreground; `opened` (taps) once at the root;
+  on Android a `PushRenderer` set in `Application.onCreate` draws the notifications the app wants its own way.
 - Sign-in returns a Firebase ID token; the backend's session is the app's.
 - The Realtime Database is JSON (`JsonElement`) at a path: `set`, `update`, `remove`, `get`, `observe`, `newKey`,
   `ServerValue`. The feature owns its paths and decodes with its own serializers; failures are
