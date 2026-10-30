@@ -25,6 +25,9 @@ class KmpLibraryConventionPlugin : Plugin<Project> {
 
             compilerOptions {
                 freeCompilerArgs.add("-Xexpect-actual-classes")
+                // Off by default in 2.4; `check` warns on a dropped value of a `@MustUseReturnValues`
+                // declaration and of most of the standard library (rule kotlin-features 1).
+                freeCompilerArgs.add("-Xreturn-value-checker=check")
             }
 
             // The target set every kit builds for, so any of them can sit in one application. Compose
